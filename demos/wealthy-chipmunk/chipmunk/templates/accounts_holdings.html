@@ -1,0 +1,54 @@
+<!-- Write HTML code here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function clicked() {
+        window.location.replace('http://localhost:8000/chipmunk/passiv_login/')
+    }
+    </script>
+</head>
+<body>
+<div class="container">
+  {% if holdings|length > 0  %}
+    <h2 class="text-center">Account Holdings</h2><br>
+    <table class="table table-dark table-striped">
+        {% for accounts_holdings in holdings %}
+          {% for key, value in accounts_holdings.items %}
+              {% if key == 'account' %}
+                  <h3>{{value.brokerage}} - {{value.name}}</h3>
+                  <thead>
+                    <tr>
+                      <th>Symbol</th>
+                      <th>Currency</th>
+                      <th>Units</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+              {% endif %}
+          {% endfor %}
+        {% endfor %}
+      <tbody>
+      {% for accounts_holdings in holdings %}
+        {% for key, value in accounts_holdings.items %}
+          {% if key == 'positions' %}
+            {% for x in value %}
+              <tr>
+                <td><a href="http://localhost:8000/chipmunk/symbol_redirect?symbol={{x.symbol.symbol}}" style="color: #9bd8ce; font-style: italic;" >{{x.symbol.symbol}}</a></td>
+                <td>{{x.symbol.currency.code}}</td>
+                <td>{{x.units}}</td>
+                <td>{{x.price}}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <button onclick="clicked()" style="color: #04a287; background: none; border: 1px solid; padding: 10px 20px">Connect SnapTrade</button>
+  {% endif %}
+
+</div>
+</body>
+</html>

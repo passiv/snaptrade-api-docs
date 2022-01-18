@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+
+{% block content %}
+    {% with holdings=holdings %}
+        {% include "accounts_holdings.html" %}
+    {% endwith %}
+
+    <!-- {% include "watchlist.html" %} -->
+{% endblock %}
