@@ -1,0 +1,574 @@
+openapi: 3.0.0
+info:
+  description: API documentation for Passiv Snaptrade 
+  version: 1.0.0
+  title: Passiv Snaptrade
+  termsOfService: N/A
+  contact:
+    email: support@passiv.com
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: Passiv Snaptrade Server
+    url: https://api.passiv.com/api/v1
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/passiv/PassivSnapAPI/1.0.0
+tags:
+  - name: Authentication
+    description: Endpoints for registering and authenticating users
+  - name: Mock Signature
+    description: Endpoints to test request is signed correctly
+  - name: Account Details
+    description: Endpoints to return account details
+paths:
+  /snapTrade/mockSignature:
+    get:
+      tags:
+        - Mock Signature
+      summary: Helper endpoints to verify that signature is signed correctly
+      parameters: 
+      - in: query
+        name: clientId
+        schema: 
+          $ref: '#/components/schemas/ClientID'
+      - in: query
+        name: timestamp
+        schema:
+          $ref: '#/components/schemas/Timestamp'
+      responses:
+        '200':
+          description: Returns data needed to verify that request signature is correct
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockSignatureResponse'
+        '500':
+          description: Unexpected Error. Please contact support
+    post:
+      tags:
+        - Mock Signature
+      summary: Endpoint to verify that signature is signed correctly
+      parameters: 
+      - in: query
+        name: clientId
+        schema: 
+          $ref: '#/components/schemas/ClientID'
+      - in: query
+        name: timestamp
+        schema:
+          $ref: '#/components/schemas/Timestamp'
+      responses:
+        '200':
+          description: Returns data needed to verify that request signature is correct
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockSignatureResponse'
+        '500':
+          description: Unexpected Error. Please contact support    
+      requestBody:
+        $ref: "#/components/requestBodies/MockSignatureRequestBody"
+  /snapTrade/registerUser:
+    post:
+      tags:
+      - Authentication
+      summary: Endpoint to create User via SnapTrade partner
+      parameters: 
+      - in: header
+        required: true
+        name: Signature
+        schema:
+          $ref: '#/components/schemas/Signature'
+      - in: query
+        required: true
+        name: clientId
+        schema: 
+          $ref: '#/components/schemas/ClientID'
+      - in: query
+        required: true
+        name: timestamp
+        schema:
+          $ref: '#/components/schemas/Timestamp'
+      responses:
+        '200':
+          description: Successfully registered user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserIDandSecret'
+        '400':
+          description: Bad Request. Could be caused by various reasons. Error message is provided in response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        '404':
+          description: Invalid SnapTrade Client ID provided in query
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404FailedRequestResponse"
+        '500':
+          description: Unexpected error
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterUserRequestBody"
+  /snapTrade/deleteUser:
+    post:
+      tags:
+        - Authentication
+      summary: Endpoint to delete a user on Passiv
+      parameters: 
+      - in: header
+        required: true
+        name: Signature
+        schema:
+          $ref: '#/components/schemas/Signature'
+      - in: query
+        required: true
+        name: clientId
+        schema: 
+          $ref: '#/components/schemas/ClientID'
+      - in: query
+        required: true
+        name: timestamp
+        schema:
+          $ref: '#/components/schemas/Timestamp'
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequestBody"
+      responses:
+        '200':
+          description: Login succesful. Redirect user to provided uri in response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteUserResponse"
+        '400': 
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        '403': 
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403FailedRequestResponse"
+        '404': 
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404FailedRequestResponse"
+        '500': 
+          description: Unexpected Error
+  /snapTrade/login:
+    post:
+      tags:
+        - Authentication
+      summary: Endpoint returns a redirect uri with a login token in the query
+      parameters: 
+      - in: header
+        required: true
+        name: Signature
+        schema:
+          $ref: '#/components/schemas/Signature'
+      - in: query
+        required: true
+        name: clientId
+        schema: 
+          $ref: '#/components/schemas/ClientID'
+      - in: query
+        required: true
+        name: timestamp
+        schema:
+          $ref: '#/components/schemas/Timestamp'
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequestBody"
+      responses:
+        '200':
+          description: Login succesful. Redirect user to provided uri in response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginRedirectURI"
+        '400': 
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        '403': 
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403FailedRequestResponse"
+        '404': 
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404FailedRequestResponse"
+        '500': 
+          description: Unexpected Error
+  /snapTrade/redeemToken:
+      post:
+        tags:
+          - Authentication
+        summary: Returns a JWT token which used to access private resources available only through the Passiv app
+        requestBody:
+          $ref: "#/components/requestBodies/RedeemTokenRequestBody"
+        responses:
+          '200':
+              description: Returns JWT token
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/JWT'
+          '400': 
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/400FailedRequestResponse"
+          '403': 
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/403FailedRequestResponse"
+          '500': 
+            description: Unexpected Error
+  /snapTrade/holdings:
+      get:
+        tags:
+          - Account Details
+          
+        parameters: 
+        - in: header
+          required: true
+          name: Signature
+          schema:
+            $ref: '#/components/schemas/Signature'
+        - in: query
+          required: true
+          name: clientId
+          schema: 
+            $ref: '#/components/schemas/ClientID'
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: '#/components/schemas/Timestamp'
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: '#/components/schemas/SnapTradeUserID'
+        - in: query
+          name: accounts
+          description: Filter holdings by account number
+          schema: 
+            type: string
+            example: P1334567
+        responses:
+          '200': 
+            description: Returns list of accounts and holdings
+            content: 
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/AccountHoldings"
+          '400': 
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/400FailedRequestResponse"
+          '403': 
+            description: Forbidden
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/403FailedRequestResponse"
+          '500':
+            description: Unexpected Error
+components:
+  requestBodies:
+    MockSignatureRequestBody:
+      description: Request body to signed. Include it under "content"
+      content: 
+        application/json:
+          schema:
+            type: object
+            example:
+              userId: api@passiv.com
+              userSecret: CHRIS.P.BACON
+    RegisterUserRequestBody:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SnapTradeRegisterUserRequestBody"
+    LoginRequestBody:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserIDandSecret"      
+    RedeemTokenRequestBody:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RedirectTokenandPin"
+  schemas:
+    400FailedRequestResponse:
+      description: Example for failed request response
+      type: object
+      properties:
+        default_detail: 
+          example: "Unable to verify data sent"
+        default_code:
+          example: 1076
+    403FailedRequestResponse:
+      description: Example for failed request response
+      type: object
+      properties:
+        default_detail: 
+          example: "User does not have permission to access this resource"
+        default_code:
+          example: 1066
+    404FailedRequestResponse:
+      description: Example for failed request response
+      type: object
+      properties:
+        default_detail: 
+          example: "The requested resource does not exist."
+        default_code:
+          example: 1011
+    Account:
+      description: SnapTradeUser Investment Account
+      type: object
+      properties:
+        brokerage: 
+          type: string
+          example: Passiv Investr
+        number:
+          type: string
+          example: P1334567
+        name:
+          type: string
+          example: Registered Retirement Savings Account
+    AccountHoldings:
+      description: Account Holdings
+      type: object
+      properties: 
+        account: 
+          $ref: '#/components/schemas/Account'
+        balances: 
+          type: array
+          items: 
+            $ref: '#/components/schemas/Balance'
+        positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+    Balance:
+      description: Account Balance
+      type: object
+      properties:
+        currency:
+          $ref: '#/components/schemas/Currency'
+        cash:
+          type: number
+          example: 300.71
+    ConsumerKey:
+      description: Shared key used to sign requests
+      type: string
+      example: UxrFb4cHdRWlmJKNuJjA6hoaN8uVa6jPGFVUl2UKHuKmurCnaU
+    Currency:
+      description: Currency
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "87b24961-b51e-4db8-9226-f198f6518a89"
+        code:
+          type: string
+          example: USD
+        name:
+          type: string
+          example: US Dollar
+    Exchange:
+      description: Stock Exchange
+      type: object
+      properties:
+        code:
+          type: string
+          example: NYSE
+        name: 
+          type: string
+          example: New York Stock Exchange
+    JWT:
+      description: JWT Token. Used to acess resources in private endpoints available
+        only through the Passiv app
+      type: object
+      properties:
+        token:
+          type: string
+          format: jwt
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImZSbUdsbWFyU1dtZDY5RDkyeGZWbVdCWUxCS0x0QiIsImV4cCI6MTU0MDA1NTMxOSwiZW1haWwiOiJ3b29kQHN5bmNocm92ZXJnZS5jb20iLCJvcmlnX2lhdCI6MTUzNzM3NjkxOX0.ZSn85i3kSBvEP5wuhWOE8_w903N1G1AfiVlD3fmri78
+    LoginRedirectURI:
+      description: Redirect uri upon successful login
+      type: object
+      properties:
+        redirectURI: 
+          example: "https://app.passiv.com/snapTrade/redeemToken?token=this$token1does2ntactu4allyexist=="
+    MockSignatureResponse:
+      description: Mock Signature Response
+      type: object
+      properties:
+        mockConsumerKey:
+          $ref: '#/components/schemas/ConsumerKey'
+        signedContent:
+          $ref: '#/components/schemas/SignedContent'
+        signature:
+          $ref: '#/components/schemas/Signature'
+    ClientID:
+      description: SnapTrade Client ID (generated and provided to partner by Passiv)
+      type: string
+      example: PASSIVTEST
+    Position:
+      description: Account Position
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/Symbol'
+        units:
+          type: number
+          example: 40
+        price:
+          type: number
+          example: 113.15
+    RedirectTokenandPin:
+      description: Response when register user is successful
+      type: object
+      properties:
+        token:
+          type: string
+          example: myDAIBCP/EYqSmMByhMRB65aMa%2BdYhu2xRsGQe0sDd9SgZXMbdRh3eBaTh/bLViVGQoil6p9ytUUVhkqWalejOqCNVkXXTk/iNPTPaFCeh9%2B
+        pin:
+          type: string
+          example: usERdeFiP@1in9
+    Signature:
+      description: |
+        Steps to generate a signature
+          * Prepare signed content (see SignedContent schema)
+          * Sign content prepared above with HMAC-SHA256 using the UTF-8 encoding
+          * Return base64 encoding of sign content along with headers
+        
+         Note: Use the shared consumer key provided by Passiv to signed the request
+        
+        Example python code
+        ```
+        import hmac
+        import json
+        from base64 import b64encode
+        from hashlib import sha256
+        from urllib.parse import urlencode
+        
+        consumer_key = "UxrFb4cHdRWlmJKNuJjA6hoaN8uVa6jPGFVUl2UKHuKmurCnaU".encode()
+        
+        request_data = {'userId': 'api@passiv.com', 'userSecret': 'CHRIS.P.BACON'}
+        request_path = "/api/v1/snapTrade/mockSignature"
+        request_query = "clientId=PASSIVTEST&timestamp=1635790389"
+
+        sig_object = {"content": request_data, "path": request_path, "query": request_query}
+        
+        sig_content = json.dumps(sig_object, separators=(",", ":"), sort_keys=True)
+        sig_digest = hmac.new(consumer_key, sig_content.encode(), sha256).digest()
+        
+        signature = b64encode(sig_digest).decode()
+        ```
+       
+      type: string
+      example: "QJPQgW0Y8mWbG9Whw/fhCYofIgSo/UAo2AIc1bBPMnY="
+    SignedContent:
+      description: |
+        Signed content requires 3 key-value pairs
+        * content -> Content included in request body, set to null if no content is included. Sort keys in content alphabetically
+        * path -> Url path of request submitted
+        * query -> Query params included in requests
+        
+        After preparing the key-value pairs, sort them alphabetically and convert them
+        into a string. 
+        
+        Note:
+        Remove any extra whitespace characters and delimiters from the signed content. 
+        
+        For example, some JSON rendering engines will produce output like this: 
+        
+          -- `{"blue": "moon", "hello": "world"}`
+            
+        To produce the correct signature, the JSON should be processed to look like this:
+          
+          -- `{"blue":"moon","hello":"world"}`
+          
+      type: string
+      example: "{\"content\":{\"userId\":\"api@passiv.com\",\"userSecret\":\"CHRIS.P.BACON\"},\"path\":\"/api/v1/snapTrade/mockSignature\",\"query\":\"clientId=PASSIVTEST&timestamp=1635790389\"}"
+    SnapTradeRegisterUserRequestBody:
+      description: Data required to register a user via SnapTrade Partner
+      type: object
+      properties:
+        userId: 
+          $ref: '#/components/schemas/SnapTradeUserID'
+    SnapTradeUserID:
+      description: SnapTrade User ID. Provided by SnapTrade Partner. Can be any 
+        string, as long as it's unique to a user
+      type: string
+      example: api@passiv.com
+    SnapTradeUserSecret:
+      description: SnapTrade User Secret randomly generated by Passiv.
+      type: string
+      example: h81@cx1lkalablakwjaltkejraj11=
+    Symbol: 
+      description: Symbol
+      type: object
+      properties:
+        symbol: 
+          type: string
+          example: DIS
+        name:
+          type: string
+          example: The Walt Disney Company
+        currency:
+          $ref: '#/components/schemas/Currency'
+        exchange:
+          $ref: '#/components/schemas/Exchange'
+    Timestamp:
+      externalDocs: 
+        "url": 'https://en.wikipedia.org/wiki/Unix_time'
+      description: Unix Epoch time 
+      type: integer
+      example: 1635790389
+    UserIDandSecret:
+      description: Response when register user is successful
+      type: object
+      properties:
+        userId:
+          $ref: '#/components/schemas/SnapTradeUserID'
+        userSecret:
+          $ref: '#/components/schemas/SnapTradeUserSecret'
+    DeleteUserResponse:
+      description: Response when register user is successful
+      type: object
+      properties:
+        status:
+          type: string
+          example: deleted
+          description: Delete status
+        userId:
+          $ref: '#/components/schemas/SnapTradeUserID'

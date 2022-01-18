@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# logs
+*.log
+
+# Vim temp files
+*.swp
+
+# other temp files
+*.save
+
+# Mac stuff
+.DS_Store
+
+#dropbox
+.dropbox
+
+# database files
+*.db
+*.sqlite3
+*.sql
+
+# jupyter
+.ipynb_checkpoints
+
+# PyCharm
+.idea
+
+# libreoffice tmp files
+.~lock.*
+
+# secrets file
+secrets.py
