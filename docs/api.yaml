@@ -1488,7 +1488,7 @@ components:
       content: 
         application/json:
           schema:
-            $ref: "#/components/schemas/DeleteUser"    
+            $ref: "#/components/schemas/UserIDandSecret"    
     RedeemTokenRequestBody:
       required: true
       content: 
