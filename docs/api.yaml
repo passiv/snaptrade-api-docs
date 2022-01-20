@@ -1,17 +1,14 @@
 openapi: 3.0.0
 info:
-  description: API documentation for Passiv Snaptrade 
+  description: Connect brokerage accounts to your app for live positions and trading 
   version: 1.0.0
-  title: Passiv Snaptrade
+  title: SnapTrade
   termsOfService: N/A
   contact:
-    email: support@passiv.com
+    email: api@snaptrade.com
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: Passiv Snaptrade Server
+  - description: SnapTrade Production API
     url: https://api.passiv.com/api/v1
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/passiv/PassivSnapAPI/1.0.0
 tags:
   - name: Authentication
     description: Endpoints for registering and authenticating users
@@ -20,11 +17,23 @@ tags:
   - name: Account Details
     description: Endpoints to return account details
 paths:
+  /:
+    get:
+      summary: Get API Status
+      responses:
+        '200':
+          description: API is alive and kicking in some fashion
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/Status'
+        default:
+          description: Unexpected error.
   /snapTrade/mockSignature:
     get:
       tags:
         - Mock Signature
-      summary: Helper endpoints to verify that signature is signed correctly
+      summary: Debug your signature algorithm
       parameters: 
       - in: query
         name: clientId
@@ -46,7 +55,7 @@ paths:
     post:
       tags:
         - Mock Signature
-      summary: Endpoint to verify that signature is signed correctly
+      summary: Debug your signature algorithm
       parameters: 
       - in: query
         name: clientId
@@ -71,7 +80,7 @@ paths:
     post:
       tags:
       - Authentication
-      summary: Endpoint to create User via SnapTrade partner
+      summary: Register user with SnapTrade in order to create secure brokerage authorizations
       parameters: 
       - in: header
         required: true
@@ -115,7 +124,7 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Endpoint to delete a user on Passiv
+      summary: Delete user from SnapTrade, disabling all brokerage authorizations and permanently deleting all data associated with the user
       parameters: 
       - in: header
         required: true
@@ -136,7 +145,7 @@ paths:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
         '200':
-          description: Login succesful. Redirect user to provided uri in response
+          description: Delete successful
           content:
             application/json:
               schema:
@@ -186,7 +195,7 @@ paths:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
         '200':
-          description: Login succesful. Redirect user to provided uri in response
+          description: Login successful. Redirect user to provided URI in response
           content:
             application/json:
               schema:
@@ -294,6 +303,1127 @@ paths:
                   $ref: "#/components/schemas/403FailedRequestResponse"
           '500':
             description: Unexpected Error
+            
+  /accounts:
+    get:
+      summary: List all investment accounts from connections
+      responses:
+        '200':
+          description: A list of all Account objects for the authenticated user.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: Unexpected error.
+  '/accounts/{accountId}':
+    get:
+      summary: Return details of an individual investment account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account to get detail of.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Details of an individual investment account
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: Unexpected error
+    patch:
+      summary: Update details of an investment account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account to update.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully updated details of an investment account
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: Unexpected error
+  '/accounts/{accountId}/balances':
+    get:
+      summary: Get all cash balances of an investment account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of all balances in investment account
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Balance'
+        default:
+          description: Unexpected error
+  '/accounts/{accountId}/positions':
+    get:
+      summary: Get all positions of an investment account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List all positions in investment account
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Position'
+        default:
+          description: Unexpected error
+  /authorizations:
+    get:
+      summary: List all brokerage authorizations
+      responses:
+        '200':
+          description: A list of all Authorization objects for the authenticated user.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BrokerageAuthorization'
+        default:
+          description: Unexpected error.
+  '/authorizations/{authorizationId}':
+    delete:
+      summary: Remove a brokerage authoriation.
+      parameters:
+        - in: path
+          name: authorizationId
+          required: true
+          description: The ID of the Authorization to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The Authorization object which was deleted.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/BrokerageAuthorization'
+        '400':
+          description: The specified authorizationId is invalid (not a UUID string).
+        '404':
+          description: The specified authorizationId was not found.
+        default:
+          description: Unexpected error.
+  /brokerages:
+    get:
+      summary: List of all supported brokerages.
+      responses:
+        '200':
+          description: A list of all defined Brokerage objects.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Brokerage'
+        default:
+          description: Unexpected error.
+  /currencies:
+    get:
+      summary: List of all supported currencies
+      responses:
+        '200':
+          description: A list of all supported currencies.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Currency'
+        default:
+          description: Unexpected error.
+  /currencies/rates:
+    get:
+      summary: Return the exchange rates of all supported currencies
+      responses:
+        '200':
+          description: A list of all exchange rates pairs for supported currencies
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExchangeRatePairs'
+  '/currencies/rates/{currencyPair}':
+    get:
+      summary: Return the exchange rate of a currency pair
+      parameters:
+        - in: path
+          name: currencyPair
+          required: true
+          description: 'A currency pair based on currency code for example, {CAD-USD}'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of all exchange rates pairs for supported currencies
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/ExchangeRatePairs'
+  /modelAssetClass:
+    get:
+      summary: List of model asset class
+      responses:
+        '200':
+          description: A list of all model asset class objects for the authenticated user.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelAssetClassDetails'
+    post:
+      summary: Create a new model asset class
+      responses:
+        '200':
+          description: A new asset class is created.
+          content:
+            application/object:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ModelAssetClassDetails'
+  '/modelAssetClass/{modelAssetClassId}':
+    get:
+      summary: Get details of a model asset class
+      parameters:
+        - in: path
+          name: modelAssetClassId
+          required: true
+          description: The ID of the model asset class to get.
+          schema:
+            $ref: '#/components/schemas/Id'
+      responses:
+        '200':
+          description: Details of a particular model asset class
+          content:
+            application/object:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ModelAssetClassDetails'
+    post:
+      summary: Updates model asset class objects
+      parameters:
+        - in: path
+          name: modelAssetClassId
+          required: true
+          description: The ID of the model asset class to update.
+          schema:
+            $ref: '#/components/schemas/Id'
+      requestBody:
+        required: true
+        description: Use this endpoint change model asset class name and to add or remove a model asset class target.
+                     <br /><br /> * Only the model asset class name is required for the model asset class object.
+                     <br /> * Only the symbol id is required for the symbol object in the model asset class target object.
+                     <br /> * To remove all model asset class targets, set the model asset class target as an empty array
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelAssetClassDetails'
+      responses:
+        '200':
+          description: Updates model asset class with data from request body.
+    delete:
+      summary: Deletes a model asset class
+      parameters:
+        - in: path
+          name: modelAssetClassId
+          required: true
+          description: The ID of the model asset class to delete.
+          schema:
+            $ref: '#/components/schemas/Id'
+      responses:
+        '204':
+          description: No content
+  /modelPortfolio:
+    get:
+      summary: List of model portfolio
+      responses:
+        '200':
+          description: A list of all model portfolio objects for the authenticated user.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelPortfolioDetails'
+    post:
+      summary: Creates a new model portfolio
+      responses:
+        '200':
+          description: A new model portfolio is created.
+          content:
+            application/object:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ModelPortfolioDetails'
+  /modelPortfolio/{modelPortfolioId}:
+    get:
+      summary: Get details of a model portfolio
+      parameters:
+        - in: path
+          name: modelPortfolioId
+          required: true
+          description: The ID of the model portfolio to get.
+          schema:
+            $ref: '#/components/schemas/Id'
+      responses:
+        '200':
+          description: Details of a particular model portfolio.
+          content:
+            application/object:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ModelPortfolioDetails'
+    post:
+      summary: Updates model portfolio object
+      parameters:
+        - in: path
+          name: modelPortfolioId
+          required: true
+          description: The ID of the model portfolio to update.
+          schema:
+            $ref: '#/components/schemas/Id'
+      requestBody:
+        required: true
+        description: Use this endpoint change model asset class name and to add or remove a model portfolio security/model portfolio asset class.
+          <br /><br /> * The model portfolio name and model portfolio model type is required.
+          <br /> * The model portfolio model type must be either 0 or 1. [0 -> Securities based, 1 -> Asset Class based]
+          <br /><br /> * If the model portfolio type is 0, the model portfolio asset class must be an empty array.
+          <br /> * If the model portfolio type is 1, the model portfolio security must be an empty array.
+          <br /><br /> * When updating the model portfolio security, the percent is required. Only the symbol id is required for the symbol object
+          <br /> * When updating the model portfolio asset classes, the percent is required. Only the model asset class id is required for the model asset class object
+          <br /><br /> * To remove all model portfolio securities or model portfolio asset class, set then to an empty array
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelPortfolioDetails'
+      responses:
+        '200':
+          description: Updates model portfolio object with data from request body.
+    delete:
+      summary: Deletes a model portfolio
+      parameters:
+        - in: path
+          name: modelPortfolioId
+          required: true
+          description: The ID of the model portfolio to delete.
+          schema:
+            $ref: '#/components/schemas/Id'
+      responses:
+        '204':
+          description: No content
+  /portfolioGroups:
+    get:
+      summary: List all portfolio groups
+      responses:
+        '200':
+          description: A list of all PortfolioGroup objects for the authenticated user.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioGroup'
+        default:
+          description: Unexpected error.
+    post:
+      summary: Create new portfolio group
+      responses:
+        '200':
+          description: A new PortfolioGroup is created.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/PortfolioGroup'
+        '400':
+          description: The input data is missing or invalid.
+        default:
+          description: Unexpected error.
+      requestBody:
+        $ref: '#/components/requestBodies/PortfolioGroup'
+  '/portfolioGroups/{portfolioGroupId}':
+    get:
+      summary: Get details of a target portfolio
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to get.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully gets a target portfolio
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PortfolioGroup'
+        default:
+          description: Unexpected error
+    patch:
+      summary: Update an existing target portfolio.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to update.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The PortfolioGroup object which was updated.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/PortfolioGroup'
+        '400':
+          description: >-
+            The specified portfolioGroupId is invalid (not a UUID string) or the
+            input data is invalid.
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+      requestBody:
+        $ref: '#/components/requestBodies/PortfolioGroup'
+    delete:
+      summary: Remove a target portfolio.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The PortfolioGroup object which was deleted.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/PortfolioGroup'
+        '400':
+          description: The specified portfolioGroupId is invalid (not a UUID string).
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+  '/portfolioGroups/{portfolioGroupId}/accounts':
+    get:
+      summary: Get all accounts associated with a portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which the accounts are linked.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Accounts linked to portfolio group
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: Unexpected error
+  '/portfolioGroups/{portfolioGroupId}/balances':
+    get:
+      summary: Get sum of cash balances in portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sum of cash balances across accounts in portfolio group by currency
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Balance'
+        '400':
+          description: >-
+            The specified portfolioGroupId is invalid (not a UUID string) or the
+            input data is invalid.
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+  '/portfolioGroups/{portfolioGroupId}/calculatedtrades':
+    get:
+      summary: List of trades to make to rebalance portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Calculated trades to make
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/CalculatedTrade'
+  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/{TradeId}':
+    get:
+      summary: Return an individual trade
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: calculatedTradeId
+          required: true
+          description: The ID of calculated trade to get account impact
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: TradeId
+          required: true
+          description: The ID of trade object
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trade objects
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trade'
+  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/impact':
+    get:
+      summary: Return the impact of making calculated trades on the accounts balances
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: calculatedTradeId
+          required: true
+          description: The ID of calculated trade to get account impact
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Impact of trades to make
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TradeImpact'
+  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/modify/{tradeId}':
+    get:
+      summary: Return an individual trade
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: calculatedTradeId
+          required: true
+          description: The ID of calculated trade to get account impact
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: tradeId
+          required: true
+          description: The ID of trade object
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trade object
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/Trade'
+    patch:
+      summary: Modify units to trade in a trade object
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: calculatedTradeId
+          required: true
+          description: The ID of calculated trade to get account impact
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: tradeId
+          required: true
+          description: The ID of trade object
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Modified trade object
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/Trade'
+      requestBody:
+        content:
+          application/object:
+            schema:
+              $ref: '#/components/schemas/Trade'
+  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/placeOrders':
+    post:
+      summary: Execute calculated trades
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to perform rebalancing calculations
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: calculatedTradeId
+          required: true
+          description: The ID of calculated trade to get account impact
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Return trade execution statuses for all trades submitted
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TradeExecutionStatus'
+  '/portfolioGroups/{portfolioGroupId}/excludedassets':
+    get:
+      summary: Get an array of excluded assets associated with a portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: >-
+            The ID of the PortfolioGroup under which the excluded assets are
+            linked.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Array of excluded assets linked to portfolio group
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExcludedAsset'
+        default:
+          description: Unexpected error
+    post:
+      summary: Adds an asset to exclude to a portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to exclude an asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: An asset is excluded from calculations in portfolio group.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/ExcludedAsset'
+      requestBody:
+        content:
+          application/object:
+            schema:
+              $ref: '#/components/schemas/UniversalSymbol'
+  '/portfolioGroups/{portfolioGroupId}/excludedassets/{symbolId}':
+    delete:
+      summary: Unexclude an asset from a portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to unexclude an asset.
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: symbolId
+          required: true
+          description: The ID of the excluded asset Symbol to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Excluded asset deleted
+  '/portfolioGroups/{portfolioGroupId}/import':
+    post:
+      summary: Import target allocation based on portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Portfolio group target allocation has been updated
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TargetAsset'
+        default:
+          description: Unexpected error.
+  '/portfolioGroups/{portfolioGroupId}/info':
+    get:
+      summary: >-
+        Return a whole bunch of relevant information relating to a portfolio
+        group.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Portfolio group target allocation has been updated
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/PortfolioGroupInfo'
+        default:
+          description: Unexpected error.
+  '/portfolioGroups/{portfolioGroupId}/positions':
+    get:
+      summary: Get total of each postions owned in portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Totals of each postions owned in portfolio group
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioGroupPosition'
+        '400':
+          description: >-
+            The specified portfolioGroupId is invalid (not a UUID string) or the
+            input data is invalid.
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+  '/portfolioGroups/{portfolioGroupId}/settings':
+    get:
+      summary: Get portfolio group settings
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to get the settings.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Settings of portfolio group
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/PortfolioGroupSettings'
+        default:
+          description: Unexpected error
+    patch:
+      summary: Updates portfolio group settings
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to patch the settings.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Settings of portfolio group
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PortfolioGroupSettings'
+        default:
+          description: Unexpected error
+  '/portfolioGroups/{portfolioGroupId}/symbols':
+    post:
+      summary: Search for symbols limited to brokerages under the specified portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup to search under
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: >-
+            A list of UniversalSymbol objects which match the specified
+            substring
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UniversalSymbol'
+        default:
+          description: Unexpected error.
+      requestBody:
+        content:
+          application/object:
+            schema:
+              $ref: '#/components/schemas/SymbolQuery'
+  '/portfolioGroups/{portfolioGroupId}/targets':
+    get:
+      summary: Get all target assets under the specified PortfolioGroup.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: All target assets owned by the specified PortfolioGroup.
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TargetAsset'
+        '400':
+          description: >-
+            The specified portfolioGroupId is invalid (not a UUID string) or the
+            input data is invalid.
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+    post:
+      summary: Set a new list of target assets under the specified PortfolioGroup. All existing target assets under this portfolio group will be replaced with the new list.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to create the target asset.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A new target asset or set of target assets is created.
+          content:
+            application/object:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TargetAssetList'
+        '400':
+          description: >-
+            The specified portfolioGroupId is invalid (not a UUID string) or the
+            input data is invalid.
+        '404':
+          description: The specified portfolioGroupId was not found.
+        default:
+          description: Unexpected error.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/TargetAssetList'
+  '/portfolioGroups/{portfolioGroupId}/targets/{targetAssetId}':
+    get:
+      summary: Get a specific target from a portfolio group
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to get the target asset.
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: targetAssetId
+          required: true
+          description: The ID of the TargetAsset to get.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully get target asset.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TargetAsset'
+        default:
+          description: Unexpected errors
+    patch:
+      summary: Update a TargetAsset under the specified PortfolioGroup.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to patch the target asset.
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: targetAssetId
+          required: true
+          description: The ID of the TargetAsset to patch.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The target asset is updated.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/TargetAsset'
+        '400':
+          description: >-
+            The specified portfolioGroupId or targetAssetId is invalid (not a
+            UUID string) or the input data is invalid.
+        '404':
+          description: The specified portfolioGroupId or targetAssetId was not found.
+        default:
+          description: Unexpected error.
+      requestBody:
+        $ref: '#/components/requestBodies/TargetAsset'
+    delete:
+      summary: Remove a TargetAsset.
+      parameters:
+        - in: path
+          name: portfolioGroupId
+          required: true
+          description: The ID of the PortfolioGroup under which to remove the target asset.
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: targetAssetId
+          required: true
+          description: The ID of the TargetAsset to delete.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The TargetAsset object which was deleted.
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/TargetAsset'
+        '400':
+          description: >-
+            The specified portfolioGroupId or targetAssetId is invalid (not a
+            UUID string) or the input data is invalid.
+        '404':
+          description: The specified portfolioGroupId or targetAssetId was not found.
+        default:
+          description: Unexpected error.
+  /settings:
+    get:
+      summary: Get the user account settings
+      responses:
+        '200':
+          description: Passiv user account settings
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+    put:
+      summary: Update the user account settings
+      responses:
+        '200':
+          description: Passiv User account settings
+          content:
+            application/object:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+      requestBody:
+        content:
+          application/object:
+            schema:
+              $ref: '#/components/schemas/UserSettings'
+  /symbols:
+    post:
+      summary: Search for symbols
+      responses:
+        '200':
+          description: >-
+            A list of UniversalSymbol objects which match the specified
+            substring
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UniversalSymbol'
+        default:
+          description: Unexpected error.
+      requestBody:
+        content:
+          application/object:
+            schema:
+              $ref: '#/components/schemas/SymbolQuery'
+  '/symbols/{symbolId}':
+    get:
+      summary: Get details of a symbol
+      parameters:
+        - in: path
+          name: symbolId
+          required: true
+          description: The ID of the UniversalSymbol to get.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully gets a symbol
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UniversalSymbol'
+        default:
+          description: Unexpected error
+  '/symbols/{ticker}':
+    get:
+      summary: Get details of a symbol by the ticker
+      parameters:
+        - in: path
+          name: ticker
+          required: true
+          description: The ticker of the UniversalSymbol to get.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully gets a symbol
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UniversalSymbol'
+        '404':
+          description: No symbol with the specified ticker found.
+        default:
+          description: Unexpected error
+
+
 components:
   requestBodies:
     MockSignatureRequestBody:
@@ -316,13 +1446,31 @@ components:
       content: 
         application/json:
           schema:
-            $ref: "#/components/schemas/UserIDandSecret"      
+            $ref: "#/components/schemas/UserIDandSecret"
+    DeleteUserRequestBody:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeleteUser"    
     RedeemTokenRequestBody:
       required: true
       content: 
         application/json:
           schema:
             $ref: "#/components/schemas/RedirectTokenandPin"
+    PortfolioGroup:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PortfolioGroup"
+    TargetAsset:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TargetAsset"
   schemas:
     400FailedRequestResponse:
       description: Example for failed request response
@@ -563,7 +1711,7 @@ components:
         userSecret:
           $ref: '#/components/schemas/SnapTradeUserSecret'
     DeleteUserResponse:
-      description: Response when register user is successful
+      description: Response when delete user is successful
       type: object
       properties:
         status:
@@ -572,3 +1720,427 @@ components:
           description: Delete status
         userId:
           $ref: '#/components/schemas/SnapTradeUserID'
+    BrokerageAuthorizationType:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - read
+            - trade
+    Brokerage:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+          example: Questrade
+        url:
+          type: string
+          format: url
+          example: 'https://www.questrade.com/'
+        authorization_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrokerageAuthorizationType'
+    BrokerageAuthorization:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        created:
+          $ref: '#/components/schemas/Timestamp'
+        brokerage:
+          $ref: '#/components/schemas/Brokerage'
+        type:
+          type: string
+          example: trade
+    BrokerageSymbol:
+      description: Brokerage symbol
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        brokerage_authorization:
+          $ref: '#/components/schemas/BrokerageAuthorization'
+        description:
+          type: string
+          example: VANGUARD CDN AGGREGATE BOND INDEX ETF
+    CalculatedTrade:
+      description: Array of rades to make to rebalance portfolio
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        trades:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trade'
+    Email:
+      type: string
+      format: email
+      example: ops@getpassiv.com
+    ExchangeRatePairs:
+      description: The exchange rate of a pair of currencies
+      type: object
+      properties:
+        src:
+          $ref: '#/components/schemas/Currency'
+        dst:
+          $ref: '#/components/schemas/Currency'
+        exchange_rate:
+          type: number
+          example: 1.32
+    ExcludedAsset:
+      description: An excluded asset in a portfolio group
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+    Id:
+      type: string
+      format: uuid
+      example: 2bcd7cc3-e922-4976-bce1-9858296801c3
+    ModelAssetClass:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          example: '06fe1fd7-fc50-43a7-b564-8a2c5f3bab44'
+        name:
+          type: string
+          example: Bonds
+    ModelAssetClassDetails:
+      type: object
+      properties:
+        model_asset_class:
+          $ref: '#/components/schemas/ModelAssetClass'
+        model_asset_class_target:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelAssetClassTarget'
+    ModelAssetClassTarget:
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+    ModelPortfolio:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          example: '06fe1fd7-fc50-43a7-b564-8a2c5f3bab44'
+        name:
+          type: string
+          example: Passiv 5x Aggressive Growth Fund
+        model_type:
+          description: 'Enum definitions -> [-1: Unassigned, 0: Security Model Portfolio, 1: Asset Class Portfolio]'
+          type: integer
+          enum: [-1, 0, 1]
+          default: -1
+    ModelPortfolioAssetClass:
+      type: object
+      properties:
+        model_asset_class:
+          $ref: '#/components/schemas/ModelAssetClass'
+        percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 100
+    ModelPortfolioDetails:
+      type: object
+      properties:
+        model_portfolio:
+          $ref: '#/components/schemas/ModelPortfolio'
+        model_portfolio_security:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPortfolioSecurity'
+        model_portfolio_asset_class:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPortfolioAssetClass'
+    ModelPortfolioSecurity:
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 100
+    Percent:
+      type: number
+      minimum: 0
+      maximum: 100
+      example: 90
+    PortfolioGroup:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+          example: Combined Retirement Portfolio
+    PortfolioGroupInfo:
+      description: Summary of all relevant information about a portfolio group.
+      type: object
+      properties:
+        symbols:
+          type: array
+          items:
+            $ref: '#/components/schemas/UniversalSymbol'
+        quotable_symbols:
+          type: array
+          items:
+            $ref: '#/components/schemas/UniversalSymbol'
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Balance'
+        positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+        target_positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetAsset'
+        ideal_positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+        excluded_positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExcludedAsset'
+        calculated_trades:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalculatedTrade'
+        brokerage_authorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrokerageAuthorization'
+        accuracy:
+          type: number
+          example: 0.962
+        settings:
+          $ref: '#/components/schemas/PortfolioGroupSettings'
+    PortfolioGroupPosition:
+      description: Details of a security held
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        price:
+          type: number
+          example: 24.81
+        units:
+          type: integer
+          example: 15
+    PortfolioGroupSettings:
+      type: object
+      properties:
+        buyOnly:
+          type: boolean
+          example: true
+        cash_optimizer:
+          type: boolean
+          example: true
+        notifyFrequency:
+          type: string
+          example: '7 00:00:00'
+        driftThreshold:
+          $ref: '#/components/schemas/Percent'
+        preferred_currency:
+          $ref: '#/components/schemas/Currency'
+    Status:
+      description: Status of API
+      type: object
+      properties:
+        version:
+          type: string
+          example: "1.0"
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+        online:
+          type: boolean
+          example: true
+    SymbolQuery:
+      description: Symbol query for searching for symbols
+      type: object
+      properties:
+        substring:
+          type: string
+          example: apple
+    TargetAsset:
+      description: Target percentage of a certain asset
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        percent:
+          $ref: '#/components/schemas/Percent'
+        is_supported:
+          type: boolean
+          example: true
+        is_excluded:
+          type: boolean
+          example: true
+        meta:
+          type: object
+    TargetAssetList:
+      description: Target percentage of a certain asset
+      type: array
+      items:
+        $ref: '#/components/schemas/TargetAsset'
+    Trade:
+      description: A trade object
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        account:
+          $ref: '#/components/schemas/Account'
+        symbol:
+          $ref: '#/components/schemas/BrokerageSymbol'
+        universal_symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        action:
+          type: string
+          enum:
+            - BUY
+            - SELL
+          example: BUY
+        units:
+          type: integer
+          example: 6
+        modified_units:
+          type: number
+          description: Modified units if user changes units to trade. Null otherwise
+          example: 2
+        price:
+          type: number
+          example: 24.81
+        sequence:
+          type: integer
+          example: 1
+    TradeExecutionStatus:
+      description: Execution status of a trade
+      type: object
+      properties:
+        symbol:
+          $ref: '#/components/schemas/BrokerageSymbol'
+        universal_symbol:
+          $ref: '#/components/schemas/UniversalSymbol'
+        trade:
+          $ref: '#/components/schemas/Trade'
+        state:
+          type: string
+          description: Execution state of a trade
+          enum:
+            - Executed
+            - Canceled
+            - Rejected
+            - Failed
+            - Not Executed
+          example: Executed
+        filled_units:
+          type: integer
+          description: Number of filled units
+          example: 3
+        action:
+          type: string
+          description: Action of executed trade
+          enum:
+            - BUY
+            - SELL
+          example: Sell
+        price:
+          type: number
+          description: Price of execution
+          example: 23.44
+        commissions:
+          type: number
+          description: Fees paid from executing trade
+          example: 23.44
+        meta:
+          type: object
+          description: Other misc. data
+          example:
+            canceledUnits: 2
+    TradeImpact:
+      description: Impact of a group of trade
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/Account'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        remaining_cash:
+          type: number
+          description: Remaining balance after executing all trades
+          example: 1.01
+        estimated_commissions:
+          type: number
+          description: Total estimated commissions across all trades to make
+          example: 10.05
+        forex_fees:
+          type: number
+          description: Estimated forex fees to pay to excute trades
+          example: 2.01
+    UniversalSymbol:
+      description: Universal symbol
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        symbol:
+          type: string
+          example: VAB.TO
+        description:
+          type: string
+          example: VANGUARD CDN AGGREGATE BOND INDEX ETF
+        currency:
+          $ref: '#/components/schemas/Currency'
+    UserSettings:
+      description: Passiv user account settings
+      type: object
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        name:
+          type: string
+          example: James Bond
+        receive_cash_notification:
+          type: boolean
+          example: true
+        receive_drift_notification:
+          type: boolean
+          example: true
+        user_trial_activated:
+          type: boolean
+          example: true
+        activated_trial_date:
+          type: string
+          format: dateTime
+          example: '2017-07-17T15:13:07.177712+00:00'
+        demo:
+          type: boolean
+          example: false
+        api_enabled:
+          type: boolean
+          example: false
+        drift_threshold:
+          type: number
+          example: 95.0
+        preferred_currency:
+          $ref: '#/components/schemas/Currency'
