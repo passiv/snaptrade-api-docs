@@ -40,7 +40,7 @@ paths:
   /:
     get:
       tags:
-        - API Status TEST
+        - API Status
       summary: Get API Status
       security: []
       responses:
