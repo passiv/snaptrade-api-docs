@@ -1432,6 +1432,33 @@ paths:
         default:
           description: Unexpected error.
 
+  /snapTrade/trade/:
+    get:
+      tags:
+        - Trading
+      summary: Execute a trade
+      properties:
+        account_id:
+          $ref: "#/components/schemas/Id"
+        unievrsal_symbol_id:
+          name: A universal symbol UUID
+        order_type:
+          type: string
+        time_in_force:
+          type: string
+        action:
+          type: string
+        units:
+          type: integer
+        price:
+          type: float
+      responses:
+        "200":
+          description: Passiv user account settings
+          content:
+            application/object:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
   /settings:
     get:
       tags:
