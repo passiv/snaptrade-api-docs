@@ -45,7 +45,7 @@ paths:
     get:
       tags:
         - Mock Signature
-      summary: Debug your signature algorithm
+      summary: Debug your signature algorithm for get requests
       security: []
       parameters: 
       - in: query
@@ -68,7 +68,7 @@ paths:
     post:
       tags:
         - Mock Signature
-      summary: Debug your signature algorithm
+      summary: Debug your signature algorithm for post requests, including the request body
       security: []
       parameters: 
       - in: query
@@ -129,22 +129,10 @@ paths:
       tags:
         - Authentication
       summary: Delete user from SnapTrade, disabling all brokerage authorizations and permanently deleting all data associated with the user
-      parameters: 
-      - in: header
-        required: true
-        name: Signature
-        schema:
-          $ref: '#/components/schemas/Signature'
-      - in: query
-        required: true
-        name: clientId
-        schema: 
-          $ref: '#/components/schemas/ClientID'
-      - in: query
-        required: true
-        name: timestamp
-        schema:
-          $ref: '#/components/schemas/Timestamp'
+      security:
+        - PartnerSignature: []
+        - PartnerClientId: []
+        - PartnerTimestamp: []
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
@@ -174,27 +162,16 @@ paths:
                 $ref: "#/components/schemas/404FailedRequestResponse"
         '500': 
           description: Unexpected Error
+
   /snapTrade/login:
     post:
       tags:
         - Authentication
-      summary: Endpoint returns a redirect uri with a login token in the query
-      parameters: 
-      - in: header
-        required: true
-        name: Signature
-        schema:
-          $ref: '#/components/schemas/Signature'
-      - in: query
-        required: true
-        name: clientId
-        schema: 
-          $ref: '#/components/schemas/ClientID'
-      - in: query
-        required: true
-        name: timestamp
-        schema:
-          $ref: '#/components/schemas/Timestamp'
+      summary: Generate a redirect URI to securely login a user to the SnapTrade Connection Portal
+      security:
+        - PartnerSignature: []
+        - PartnerClientId: []
+        - PartnerTimestamp: []
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
@@ -224,39 +201,12 @@ paths:
                 $ref: "#/components/schemas/404FailedRequestResponse"
         '500': 
           description: Unexpected Error
-  /snapTrade/redeemToken:
-      post:
-        tags:
-          - Authentication
-        summary: Returns a JWT token which used to access private resources available only through the Passiv app
-        requestBody:
-          $ref: "#/components/requestBodies/RedeemTokenRequestBody"
-        responses:
-          '200':
-              description: Returns JWT token
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/JWT'
-          '400': 
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/400FailedRequestResponse"
-          '403': 
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/403FailedRequestResponse"
-          '500': 
-            description: Unexpected Error
-  /snapTrade/holdings:
+
+  /holdings:
       get:
         tags:
           - Account Details
-          
+        summary: List all accounts for the user, plus balances and positions for each account.
         parameters: 
         - in: header
           required: true
@@ -307,10 +257,10 @@ paths:
                   $ref: "#/components/schemas/403FailedRequestResponse"
           '500':
             description: Unexpected Error
-            
+
   /accounts:
     get:
-      summary: List all investment accounts from connections
+      summary: List all investment accounts for the user
       responses:
         '200':
           description: A list of all Account objects for the authenticated user.
@@ -322,9 +272,10 @@ paths:
                   $ref: '#/components/schemas/Account'
         default:
           description: Unexpected error.
+
   '/accounts/{accountId}':
     get:
-      summary: Return details of an individual investment account
+      summary: Return details of a specific investment account
       parameters:
         - in: path
           name: accountId
@@ -335,7 +286,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Details of an individual investment account
+          description: Details of a specific investment account
           content:
             application/object:
               schema:
@@ -365,6 +316,7 @@ paths:
                   $ref: '#/components/schemas/Account'
         default:
           description: Unexpected error
+
   '/accounts/{accountId}/balances':
     get:
       summary: Get all cash balances of an investment account
@@ -387,6 +339,7 @@ paths:
                   $ref: '#/components/schemas/Balance'
         default:
           description: Unexpected error
+
   '/accounts/{accountId}/positions':
     get:
       summary: Get all positions of an investment account
@@ -409,9 +362,10 @@ paths:
                   $ref: '#/components/schemas/Position'
         default:
           description: Unexpected error
+
   /authorizations:
     get:
-      summary: List all brokerage authorizations
+      summary: List all brokerage authorizations for the user
       responses:
         '200':
           description: A list of all Authorization objects for the authenticated user.
@@ -423,6 +377,7 @@ paths:
                   $ref: '#/components/schemas/BrokerageAuthorization'
         default:
           description: Unexpected error.
+
   '/authorizations/{authorizationId}':
     delete:
       summary: Remove a brokerage authoriation.
@@ -447,6 +402,7 @@ paths:
           description: The specified authorizationId was not found.
         default:
           description: Unexpected error.
+
   /brokerages:
     get:
       summary: List of all supported brokerages.
@@ -461,6 +417,7 @@ paths:
                   $ref: '#/components/schemas/Brokerage'
         default:
           description: Unexpected error.
+
   /currencies:
     get:
       summary: List of all supported currencies
@@ -475,6 +432,7 @@ paths:
                   $ref: '#/components/schemas/Currency'
         default:
           description: Unexpected error.
+
   /currencies/rates:
     get:
       summary: Return the exchange rates of all supported currencies
@@ -487,6 +445,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ExchangeRatePairs'
+
   '/currencies/rates/{currencyPair}':
     get:
       summary: Return the exchange rate of a currency pair
@@ -504,6 +463,7 @@ paths:
             application/object:
               schema:
                 $ref: '#/components/schemas/ExchangeRatePairs'
+
   /modelAssetClass:
     get:
       summary: List of model asset class
@@ -526,6 +486,7 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/ModelAssetClassDetails'
+
   '/modelAssetClass/{modelAssetClassId}':
     get:
       summary: Get details of a model asset class
@@ -578,6 +539,7 @@ paths:
       responses:
         '204':
           description: No content
+
   /modelPortfolio:
     get:
       summary: List of model portfolio
@@ -600,6 +562,7 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/ModelPortfolioDetails'
+
   /modelPortfolio/{modelPortfolioId}:
     get:
       summary: Get details of a model portfolio
@@ -656,6 +619,7 @@ paths:
       responses:
         '204':
           description: No content
+
   /portfolioGroups:
     get:
       summary: List all portfolio groups
@@ -685,6 +649,7 @@ paths:
           description: Unexpected error.
       requestBody:
         $ref: '#/components/requestBodies/PortfolioGroup'
+
   '/portfolioGroups/{portfolioGroupId}':
     get:
       summary: Get details of a target portfolio
@@ -755,6 +720,7 @@ paths:
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
+
   '/portfolioGroups/{portfolioGroupId}/accounts':
     get:
       summary: Get all accounts associated with a portfolio group
@@ -777,6 +743,7 @@ paths:
                   $ref: '#/components/schemas/Account'
         default:
           description: Unexpected error
+
   '/portfolioGroups/{portfolioGroupId}/balances':
     get:
       summary: Get sum of cash balances in portfolio group
@@ -805,6 +772,7 @@ paths:
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
+
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades':
     get:
       summary: List of trades to make to rebalance portfolio group
@@ -857,6 +825,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Trade'
+
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/impact':
     get:
       summary: Return the impact of making calculated trades on the accounts balances
@@ -884,6 +853,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TradeImpact'
+
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/modify/{tradeId}':
     get:
       summary: Return an individual trade
@@ -952,6 +922,7 @@ paths:
           application/object:
             schema:
               $ref: '#/components/schemas/Trade'
+
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/placeOrders':
     post:
       summary: Execute calculated trades
@@ -979,6 +950,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TradeExecutionStatus'
+
   '/portfolioGroups/{portfolioGroupId}/excludedassets':
     get:
       summary: Get an array of excluded assets associated with a portfolio group
@@ -1025,6 +997,7 @@ paths:
           application/object:
             schema:
               $ref: '#/components/schemas/UniversalSymbol'
+
   '/portfolioGroups/{portfolioGroupId}/excludedassets/{symbolId}':
     delete:
       summary: Unexclude an asset from a portfolio group
@@ -1046,6 +1019,7 @@ paths:
       responses:
         '200':
           description: Excluded asset deleted
+
   '/portfolioGroups/{portfolioGroupId}/import':
     post:
       summary: Import target allocation based on portfolio group
@@ -1068,6 +1042,7 @@ paths:
                   $ref: '#/components/schemas/TargetAsset'
         default:
           description: Unexpected error.
+
   '/portfolioGroups/{portfolioGroupId}/info':
     get:
       summary: >-
@@ -1090,6 +1065,7 @@ paths:
                 $ref: '#/components/schemas/PortfolioGroupInfo'
         default:
           description: Unexpected error.
+
   '/portfolioGroups/{portfolioGroupId}/positions':
     get:
       summary: Get total of each postions owned in portfolio group
@@ -1118,6 +1094,7 @@ paths:
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
+
   '/portfolioGroups/{portfolioGroupId}/settings':
     get:
       summary: Get portfolio group settings
@@ -1157,6 +1134,7 @@ paths:
                 $ref: '#/components/schemas/PortfolioGroupSettings'
         default:
           description: Unexpected error
+
   '/portfolioGroups/{portfolioGroupId}/symbols':
     post:
       summary: Search for symbols limited to brokerages under the specified portfolio group
@@ -1186,6 +1164,7 @@ paths:
           application/object:
             schema:
               $ref: '#/components/schemas/SymbolQuery'
+
   '/portfolioGroups/{portfolioGroupId}/targets':
     get:
       summary: Get all target assets under the specified PortfolioGroup.
@@ -1246,6 +1225,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/TargetAssetList'
+
   '/portfolioGroups/{portfolioGroupId}/targets/{targetAssetId}':
     get:
       summary: Get a specific target from a portfolio group
@@ -1339,9 +1319,10 @@ paths:
           description: The specified portfolioGroupId or targetAssetId was not found.
         default:
           description: Unexpected error.
+
   /settings:
     get:
-      summary: Get the user account settings
+      summary: Get the user's global account settings
       responses:
         '200':
           description: Passiv user account settings
@@ -1363,6 +1344,7 @@ paths:
           application/object:
             schema:
               $ref: '#/components/schemas/UserSettings'
+
   /symbols:
     post:
       summary: Search for symbols
@@ -1384,6 +1366,7 @@ paths:
           application/object:
             schema:
               $ref: '#/components/schemas/SymbolQuery'
+
   '/symbols/{symbolId}':
     get:
       summary: Get details of a symbol
@@ -1404,6 +1387,7 @@ paths:
                 $ref: '#/components/schemas/UniversalSymbol'
         default:
           description: Unexpected error
+
   '/symbols/{ticker}':
     get:
       summary: Get details of a symbol by the ticker
@@ -1426,35 +1410,6 @@ paths:
           description: No symbol with the specified ticker found.
         default:
           description: Unexpected error
-
-
-#        parameters: 
-#        - in: header
-#          required: true
-#          name: Signature
-#          schema:
-#            $ref: '#/components/schemas/Signature'
-#        - in: query
-#          required: true
-#          name: clientId
-#          schema: 
-#            $ref: '#/components/schemas/ClientID'
-#        - in: query
-#          required: true
-#          name: timestamp
-#          schema:
-#            $ref: '#/components/schemas/Timestamp'
-#        - in: query
-#          required: true
-#          name: userId
-#          schema:
-#            $ref: '#/components/schemas/SnapTradeUserID'
-#        - in: query
-#          name: accounts
-#          description: Filter holdings by account number
-#          schema: 
-#            type: string
-#            example: P1334567
 
 components:
   securitySchemes:
