@@ -19,16 +19,29 @@ security:
   - PartnerUserId: []
 
 tags:
+  - name: API Status
+    description: Check whether the API is operational and verify timestamps.
+  - name: Development Tools
+    description: Test and debug API authentication.
   - name: Authentication
-    description: Endpoints for registering and authenticating users
-  - name: Mock Signature
-    description: Endpoints to test request is signed correctly
-  - name: Account Details
-    description: Endpoints to return account details
+    description: Register and authenticate users with SnapTrade.
+  - name: Reference Data
+    description: Retrieve basic information for API use, such as supported brokerages, exchanges, currencies, etc.
+  - name: Connections and Settings
+    description: Retrieve and manage user connections and per-user settings.
+  - name: Account Information
+    description: Retrieve account information, such as positions, balances, etc.
+  - name: Trading
+    description: Manage orders on user accounts
+  - name: Portfolio Management
+    description: Create portfolio groups, model portfolios, and trade calculations for rebalancing.
+  
 
 paths:
   /:
     get:
+      tags:
+        - API Status
       summary: Get API Status
       security: []
       responses:
@@ -44,7 +57,7 @@ paths:
   /snapTrade/mockSignature:
     get:
       tags:
-        - Mock Signature
+        - Development Tools
       summary: Debug your signature algorithm for get requests
       security: []
       parameters: 
@@ -67,7 +80,7 @@ paths:
           description: Unexpected Error. Please contact support
     post:
       tags:
-        - Mock Signature
+        - Development Tools
       summary: Debug your signature algorithm for post requests, including the request body
       security: []
       parameters: 
@@ -205,7 +218,7 @@ paths:
   /holdings:
       get:
         tags:
-          - Account Details
+          - Account Information
         summary: List all accounts for the user, plus balances and positions for each account.
         parameters: 
         - in: header
@@ -260,6 +273,8 @@ paths:
 
   /accounts:
     get:
+      tags:
+        - Account Information
       summary: List all investment accounts for the user
       responses:
         '200':
@@ -275,6 +290,8 @@ paths:
 
   '/accounts/{accountId}':
     get:
+      tags:
+        - Account Information
       summary: Return details of a specific investment account
       parameters:
         - in: path
@@ -296,6 +313,8 @@ paths:
         default:
           description: Unexpected error
     patch:
+      tags:
+        - Account Information
       summary: Update details of an investment account
       parameters:
         - in: path
@@ -319,6 +338,8 @@ paths:
 
   '/accounts/{accountId}/balances':
     get:
+      tags:
+        - Account Information
       summary: Get all cash balances of an investment account
       parameters:
         - in: path
@@ -342,6 +363,8 @@ paths:
 
   '/accounts/{accountId}/positions':
     get:
+      tags:
+        - Account Information
       summary: Get all positions of an investment account
       parameters:
         - in: path
@@ -365,6 +388,8 @@ paths:
 
   /authorizations:
     get:
+      tags:
+        - Connections and Settings
       summary: List all brokerage authorizations for the user
       responses:
         '200':
@@ -380,6 +405,8 @@ paths:
 
   '/authorizations/{authorizationId}':
     delete:
+      tags:
+        - Connections and Settings
       summary: Remove a brokerage authoriation.
       parameters:
         - in: path
@@ -405,6 +432,8 @@ paths:
 
   /brokerages:
     get:
+      tags:
+        - Reference Data
       summary: List of all supported brokerages.
       responses:
         '200':
@@ -420,6 +449,8 @@ paths:
 
   /currencies:
     get:
+      tags:
+        - Reference Data
       summary: List of all supported currencies
       responses:
         '200':
@@ -435,6 +466,8 @@ paths:
 
   /currencies/rates:
     get:
+      tags:
+        - Reference Data
       summary: Return the exchange rates of all supported currencies
       responses:
         '200':
@@ -448,6 +481,8 @@ paths:
 
   '/currencies/rates/{currencyPair}':
     get:
+      tags:
+        - Reference Data
       summary: Return the exchange rate of a currency pair
       parameters:
         - in: path
@@ -466,6 +501,8 @@ paths:
 
   /modelAssetClass:
     get:
+      tags:
+        - Portfolio Management
       summary: List of model asset class
       responses:
         '200':
@@ -477,6 +514,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/ModelAssetClassDetails'
     post:
+      tags:
+        - Portfolio Management
       summary: Create a new model asset class
       responses:
         '200':
@@ -489,6 +528,8 @@ paths:
 
   '/modelAssetClass/{modelAssetClassId}':
     get:
+      tags:
+        - Portfolio Management
       summary: Get details of a model asset class
       parameters:
         - in: path
@@ -506,6 +547,8 @@ paths:
                 type: object
                 $ref: '#/components/schemas/ModelAssetClassDetails'
     post:
+      tags:
+        - Portfolio Management
       summary: Updates model asset class objects
       parameters:
         - in: path
@@ -528,6 +571,8 @@ paths:
         '200':
           description: Updates model asset class with data from request body.
     delete:
+      tags:
+        - Portfolio Management
       summary: Deletes a model asset class
       parameters:
         - in: path
@@ -542,6 +587,8 @@ paths:
 
   /modelPortfolio:
     get:
+      tags:
+        - Portfolio Management
       summary: List of model portfolio
       responses:
         '200':
@@ -553,6 +600,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/ModelPortfolioDetails'
     post:
+      tags:
+        - Portfolio Management
       summary: Creates a new model portfolio
       responses:
         '200':
@@ -565,6 +614,8 @@ paths:
 
   /modelPortfolio/{modelPortfolioId}:
     get:
+      tags:
+        - Portfolio Management
       summary: Get details of a model portfolio
       parameters:
         - in: path
@@ -582,6 +633,8 @@ paths:
                 type: object
                 $ref: '#/components/schemas/ModelPortfolioDetails'
     post:
+      tags:
+        - Portfolio Management
       summary: Updates model portfolio object
       parameters:
         - in: path
@@ -608,6 +661,8 @@ paths:
         '200':
           description: Updates model portfolio object with data from request body.
     delete:
+      tags:
+        - Portfolio Management
       summary: Deletes a model portfolio
       parameters:
         - in: path
@@ -622,6 +677,8 @@ paths:
 
   /portfolioGroups:
     get:
+      tags:
+        - Portfolio Management
       summary: List all portfolio groups
       responses:
         '200':
@@ -635,6 +692,8 @@ paths:
         default:
           description: Unexpected error.
     post:
+      tags:
+        - Portfolio Management
       summary: Create new portfolio group
       responses:
         '200':
@@ -652,6 +711,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}':
     get:
+      tags:
+        - Portfolio Management
       summary: Get details of a target portfolio
       parameters:
         - in: path
@@ -671,6 +732,8 @@ paths:
         default:
           description: Unexpected error
     patch:
+      tags:
+        - Portfolio Management
       summary: Update an existing target portfolio.
       parameters:
         - in: path
@@ -698,6 +761,8 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/PortfolioGroup'
     delete:
+      tags:
+        - Portfolio Management
       summary: Remove a target portfolio.
       parameters:
         - in: path
@@ -723,6 +788,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/accounts':
     get:
+      tags:
+        - Portfolio Management
       summary: Get all accounts associated with a portfolio group
       parameters:
         - in: path
@@ -746,6 +813,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/balances':
     get:
+      tags:
+        - Portfolio Management
       summary: Get sum of cash balances in portfolio group
       parameters:
         - in: path
@@ -775,6 +844,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades':
     get:
+      tags:
+        - Portfolio Management
       summary: List of trades to make to rebalance portfolio group
       parameters:
         - in: path
@@ -793,6 +864,8 @@ paths:
                 $ref: '#/components/schemas/CalculatedTrade'
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/{TradeId}':
     get:
+      tags:
+        - Portfolio Management
       summary: Return an individual trade
       parameters:
         - in: path
@@ -828,7 +901,9 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/impact':
     get:
-      summary: Return the impact of making calculated trades on the accounts balances
+      tags:
+        - Trading
+      summary: Return the impact of placing a series of trades on the portfolio
       parameters:
         - in: path
           name: portfolioGroupId
@@ -856,7 +931,10 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/modify/{tradeId}':
     get:
-      summary: Return an individual trade
+      tags:
+        - Trading
+        - Portfolio Management
+      summary: Return details of a specific trade before it's placed
       parameters:
         - in: path
           name: portfolioGroupId
@@ -887,7 +965,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Trade'
     patch:
-      summary: Modify units to trade in a trade object
+      tags:
+        - Trading
+        - Portfolio Management
+      summary: Modify units of a trade before it is placed
       parameters:
         - in: path
           name: portfolioGroupId
@@ -925,7 +1006,9 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/placeOrders':
     post:
-      summary: Execute calculated trades
+      tags:
+        - Trading
+      summary: Place orders for the CalculatedTrades in series
       parameters:
         - in: path
           name: portfolioGroupId
@@ -953,6 +1036,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/excludedassets':
     get:
+      tags:
+        - Portfolio Management
       summary: Get an array of excluded assets associated with a portfolio group
       parameters:
         - in: path
@@ -976,6 +1061,8 @@ paths:
         default:
           description: Unexpected error
     post:
+      tags:
+        - Portfolio Management
       summary: Adds an asset to exclude to a portfolio group
       parameters:
         - in: path
@@ -1000,6 +1087,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/excludedassets/{symbolId}':
     delete:
+      tags:
+        - Portfolio Management
       summary: Unexclude an asset from a portfolio group
       parameters:
         - in: path
@@ -1022,6 +1111,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/import':
     post:
+      tags:
+        - Portfolio Management
       summary: Import target allocation based on portfolio group
       parameters:
         - in: path
@@ -1045,6 +1136,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/info':
     get:
+      tags:
+        - Portfolio Management
       summary: >-
         Return a whole bunch of relevant information relating to a portfolio
         group.
@@ -1068,6 +1161,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/positions':
     get:
+      tags:
+        - Portfolio Management
       summary: Get total of each postions owned in portfolio group
       parameters:
         - in: path
@@ -1097,6 +1192,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/settings':
     get:
+      tags:
+        - Portfolio Management
       summary: Get portfolio group settings
       parameters:
         - in: path
@@ -1116,6 +1213,8 @@ paths:
         default:
           description: Unexpected error
     patch:
+      tags:
+        - Portfolio Management
       summary: Updates portfolio group settings
       parameters:
         - in: path
@@ -1137,6 +1236,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/symbols':
     post:
+      tags:
+        - Portfolio Management
       summary: Search for symbols limited to brokerages under the specified portfolio group
       parameters:
         - in: path
@@ -1167,6 +1268,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/targets':
     get:
+      tags:
+        - Portfolio Management
       summary: Get all target assets under the specified PortfolioGroup.
       parameters:
         - in: path
@@ -1194,6 +1297,8 @@ paths:
         default:
           description: Unexpected error.
     post:
+      tags:
+        - Portfolio Management
       summary: Set a new list of target assets under the specified PortfolioGroup. All existing target assets under this portfolio group will be replaced with the new list.
       parameters:
         - in: path
@@ -1228,6 +1333,8 @@ paths:
 
   '/portfolioGroups/{portfolioGroupId}/targets/{targetAssetId}':
     get:
+      tags:
+        - Portfolio Management
       summary: Get a specific target from a portfolio group
       parameters:
         - in: path
@@ -1254,6 +1361,8 @@ paths:
         default:
           description: Unexpected errors
     patch:
+      tags:
+        - Portfolio Management
       summary: Update a TargetAsset under the specified PortfolioGroup.
       parameters:
         - in: path
@@ -1288,6 +1397,8 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/TargetAsset'
     delete:
+      tags:
+        - Portfolio Management
       summary: Remove a TargetAsset.
       parameters:
         - in: path
@@ -1322,6 +1433,8 @@ paths:
 
   /settings:
     get:
+      tags:
+        - Connections and Settings
       summary: Get the user's global account settings
       responses:
         '200':
@@ -1331,7 +1444,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserSettings'
     put:
-      summary: Update the user account settings
+      tags:
+        - Connections and Settings
+      summary: Update the user's global account settings
       responses:
         '200':
           description: Passiv User account settings
@@ -1347,6 +1462,8 @@ paths:
 
   /symbols:
     post:
+      tags:
+        - Reference Data
       summary: Search for symbols
       responses:
         '200':
@@ -1369,6 +1486,8 @@ paths:
 
   '/symbols/{symbolId}':
     get:
+      tags:
+        - Reference Data
       summary: Get details of a symbol
       parameters:
         - in: path
@@ -1390,6 +1509,8 @@ paths:
 
   '/symbols/{ticker}':
     get:
+      tags:
+        - Reference Data
       summary: Get details of a symbol by the ticker
       parameters:
         - in: path
