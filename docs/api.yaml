@@ -1,4 +1,5 @@
 openapi: 3.0.0
+
 info:
   description: Connect brokerage accounts to your app for live positions and trading 
   version: 1.0.0
@@ -6,9 +7,17 @@ info:
   termsOfService: N/A
   contact:
     email: api@snaptrade.com
+
 servers:
   - description: SnapTrade Production API
     url: https://api.passiv.com/api/v1
+
+security:
+  - PartnerSignature: []
+  - PartnerClientId: []
+  - PartnerTimestamp: []
+  - PartnerUserId: []
+
 tags:
   - name: Authentication
     description: Endpoints for registering and authenticating users
@@ -16,10 +25,12 @@ tags:
     description: Endpoints to test request is signed correctly
   - name: Account Details
     description: Endpoints to return account details
+
 paths:
   /:
     get:
       summary: Get API Status
+      security: []
       responses:
         '200':
           description: API is alive and kicking in some fashion
@@ -29,11 +40,13 @@ paths:
                 $ref: '#/components/schemas/Status'
         default:
           description: Unexpected error.
+
   /snapTrade/mockSignature:
     get:
       tags:
         - Mock Signature
       summary: Debug your signature algorithm
+      security: []
       parameters: 
       - in: query
         name: clientId
@@ -56,6 +69,7 @@ paths:
       tags:
         - Mock Signature
       summary: Debug your signature algorithm
+      security: []
       parameters: 
       - in: query
         name: clientId
@@ -76,27 +90,18 @@ paths:
           description: Unexpected Error. Please contact support    
       requestBody:
         $ref: "#/components/requestBodies/MockSignatureRequestBody"
+
   /snapTrade/registerUser:
     post:
       tags:
       - Authentication
       summary: Register user with SnapTrade in order to create secure brokerage authorizations
-      parameters: 
-      - in: header
-        required: true
-        name: Signature
-        schema:
-          $ref: '#/components/schemas/Signature'
-      - in: query
-        required: true
-        name: clientId
-        schema: 
-          $ref: '#/components/schemas/ClientID'
-      - in: query
-        required: true
-        name: timestamp
-        schema:
-          $ref: '#/components/schemas/Timestamp'
+      security:
+        - PartnerSignature: []
+        - PartnerClientId: []
+        - PartnerTimestamp: []
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterUserRequestBody"
       responses:
         '200':
           description: Successfully registered user
@@ -118,8 +123,7 @@ paths:
                 $ref: "#/components/schemas/404FailedRequestResponse"
         '500':
           description: Unexpected error
-      requestBody:
-        $ref: "#/components/requestBodies/RegisterUserRequestBody"
+
   /snapTrade/deleteUser:
     post:
       tags:
@@ -1454,12 +1458,22 @@ paths:
 
 components:
   securitySchemes:
-    PartnerAuth:
+    PartnerSignature:
       type: apiKey
       in: header
       name: Signature
-      schema:
-        $ref: '#/components/schemas/Signature'
+    PartnerClientId:
+      type: apiKey
+      in: query
+      name: clientId
+    PartnerTimestamp:
+      type: apiKey
+      in: query
+      name: timestamp
+    PartnerUserId:
+      type: apiKey
+      in: query
+      name: userId
 
   requestBodies:
     MockSignatureRequestBody:
