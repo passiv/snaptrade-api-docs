@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  description: Connect brokerage accounts to your app for live positions and trading 
+  description: Connect brokerage accounts to your app for live positions and trading
   version: 1.0.0
   title: SnapTrade
   termsOfService: N/A
@@ -35,22 +35,21 @@ tags:
     description: Manage orders on user accounts
   - name: Portfolio Management
     description: Create portfolio groups, model portfolios, and trade calculations for rebalancing.
-  
 
 paths:
   /:
     get:
       tags:
-        - API Status
+        - API Status TEST
       summary: Get API Status
       security: []
       responses:
-        '200':
+        "200":
           description: API is alive and kicking in some fashion
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
         default:
           description: Unexpected error.
 
@@ -60,54 +59,54 @@ paths:
         - Development Tools
       summary: Debug your signature algorithm for get requests
       security: []
-      parameters: 
-      - in: query
-        name: clientId
-        schema: 
-          $ref: '#/components/schemas/ClientID'
-      - in: query
-        name: timestamp
-        schema:
-          $ref: '#/components/schemas/Timestamp'
+      parameters:
+        - in: query
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
-        '200':
+        "200":
           description: Returns data needed to verify that request signature is correct
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MockSignatureResponse'
-        '500':
+                $ref: "#/components/schemas/MockSignatureResponse"
+        "500":
           description: Unexpected Error. Please contact support
     post:
       tags:
         - Development Tools
       summary: Debug your signature algorithm for post requests, including the request body
       security: []
-      parameters: 
-      - in: query
-        name: clientId
-        schema: 
-          $ref: '#/components/schemas/ClientID'
-      - in: query
-        name: timestamp
-        schema:
-          $ref: '#/components/schemas/Timestamp'
+      parameters:
+        - in: query
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
-        '200':
+        "200":
           description: Returns data needed to verify that request signature is correct
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MockSignatureResponse'
-        '500':
-          description: Unexpected Error. Please contact support    
+                $ref: "#/components/schemas/MockSignatureResponse"
+        "500":
+          description: Unexpected Error. Please contact support
       requestBody:
         $ref: "#/components/requestBodies/MockSignatureRequestBody"
 
   /snapTrade/registerUser:
     post:
       tags:
-      - Authentication
+        - Authentication
       summary: Register user with SnapTrade in order to create secure brokerage authorizations
       security:
         - PartnerSignature: []
@@ -116,25 +115,25 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/RegisterUserRequestBody"
       responses:
-        '200':
+        "200":
           description: Successfully registered user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserIDandSecret'
-        '400':
+                $ref: "#/components/schemas/UserIDandSecret"
+        "400":
           description: Bad Request. Could be caused by various reasons. Error message is provided in response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/400FailedRequestResponse"
-        '404':
+        "404":
           description: Invalid SnapTrade Client ID provided in query
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/404FailedRequestResponse"
-        '500':
+        "500":
           description: Unexpected error
 
   /snapTrade/deleteUser:
@@ -149,31 +148,31 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
-        '200':
+        "200":
           description: Delete successful
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeleteUserResponse"
-        '400': 
+        "400":
           description: Bad Request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/400FailedRequestResponse"
-        '403': 
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/403FailedRequestResponse"
-        '404': 
+        "404":
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/404FailedRequestResponse"
-        '500': 
+        "500":
           description: Unexpected Error
 
   /snapTrade/login:
@@ -188,88 +187,88 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
-        '200':
+        "200":
           description: Login successful. Redirect user to provided URI in response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginRedirectURI"
-        '400': 
+        "400":
           description: Bad Request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/400FailedRequestResponse"
-        '403': 
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/403FailedRequestResponse"
-        '404': 
+        "404":
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/404FailedRequestResponse"
-        '500': 
+        "500":
           description: Unexpected Error
 
   /holdings:
-      get:
-        tags:
-          - Account Information
-        summary: List all accounts for the user, plus balances and positions for each account.
-        parameters: 
+    get:
+      tags:
+        - Account Information
+      summary: List all accounts for the user, plus balances and positions for each account.
+      parameters:
         - in: header
           required: true
           name: Signature
           schema:
-            $ref: '#/components/schemas/Signature'
+            $ref: "#/components/schemas/Signature"
         - in: query
           required: true
           name: clientId
-          schema: 
-            $ref: '#/components/schemas/ClientID'
+          schema:
+            $ref: "#/components/schemas/ClientID"
         - in: query
           required: true
           name: timestamp
           schema:
-            $ref: '#/components/schemas/Timestamp'
+            $ref: "#/components/schemas/Timestamp"
         - in: query
           required: true
           name: userId
           schema:
-            $ref: '#/components/schemas/SnapTradeUserID'
+            $ref: "#/components/schemas/SnapTradeUserID"
         - in: query
           name: accounts
           description: Filter holdings by account number
-          schema: 
+          schema:
             type: string
             example: P1334567
-        responses:
-          '200': 
-            description: Returns list of accounts and holdings
-            content: 
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/AccountHoldings"
-          '400': 
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/400FailedRequestResponse"
-          '403': 
-            description: Forbidden
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/403FailedRequestResponse"
-          '500':
-            description: Unexpected Error
+      responses:
+        "200":
+          description: Returns list of accounts and holdings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountHoldings"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403FailedRequestResponse"
+        "500":
+          description: Unexpected Error
 
   /accounts:
     get:
@@ -277,18 +276,18 @@ paths:
         - Account Information
       summary: List all investment accounts for the user
       responses:
-        '200':
+        "200":
           description: A list of all Account objects for the authenticated user.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: "#/components/schemas/Account"
         default:
           description: Unexpected error.
 
-  '/accounts/{accountId}':
+  "/accounts/{accountId}":
     get:
       tags:
         - Account Information
@@ -302,14 +301,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Details of a specific investment account
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: "#/components/schemas/Account"
         default:
           description: Unexpected error
     patch:
@@ -325,18 +324,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successfully updated details of an investment account
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: "#/components/schemas/Account"
         default:
           description: Unexpected error
 
-  '/accounts/{accountId}/balances':
+  "/accounts/{accountId}/balances":
     get:
       tags:
         - Account Information
@@ -350,18 +349,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List of all balances in investment account
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Balance'
+                  $ref: "#/components/schemas/Balance"
         default:
           description: Unexpected error
 
-  '/accounts/{accountId}/positions':
+  "/accounts/{accountId}/positions":
     get:
       tags:
         - Account Information
@@ -375,14 +374,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List all positions in investment account
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Position'
+                  $ref: "#/components/schemas/Position"
         default:
           description: Unexpected error
 
@@ -392,18 +391,18 @@ paths:
         - Connections and Settings
       summary: List all brokerage authorizations for the user
       responses:
-        '200':
+        "200":
           description: A list of all Authorization objects for the authenticated user.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BrokerageAuthorization'
+                  $ref: "#/components/schemas/BrokerageAuthorization"
         default:
           description: Unexpected error.
 
-  '/authorizations/{authorizationId}':
+  "/authorizations/{authorizationId}":
     delete:
       tags:
         - Connections and Settings
@@ -417,15 +416,15 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: The Authorization object which was deleted.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/BrokerageAuthorization'
-        '400':
+                $ref: "#/components/schemas/BrokerageAuthorization"
+        "400":
           description: The specified authorizationId is invalid (not a UUID string).
-        '404':
+        "404":
           description: The specified authorizationId was not found.
         default:
           description: Unexpected error.
@@ -436,14 +435,14 @@ paths:
         - Reference Data
       summary: List of all supported brokerages.
       responses:
-        '200':
+        "200":
           description: A list of all defined Brokerage objects.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Brokerage'
+                  $ref: "#/components/schemas/Brokerage"
         default:
           description: Unexpected error.
 
@@ -453,14 +452,14 @@ paths:
         - Reference Data
       summary: List of all supported currencies
       responses:
-        '200':
+        "200":
           description: A list of all supported currencies.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Currency'
+                  $ref: "#/components/schemas/Currency"
         default:
           description: Unexpected error.
 
@@ -470,16 +469,16 @@ paths:
         - Reference Data
       summary: Return the exchange rates of all supported currencies
       responses:
-        '200':
+        "200":
           description: A list of all exchange rates pairs for supported currencies
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ExchangeRatePairs'
+                  $ref: "#/components/schemas/ExchangeRatePairs"
 
-  '/currencies/rates/{currencyPair}':
+  "/currencies/rates/{currencyPair}":
     get:
       tags:
         - Reference Data
@@ -488,16 +487,16 @@ paths:
         - in: path
           name: currencyPair
           required: true
-          description: 'A currency pair based on currency code for example, {CAD-USD}'
+          description: "A currency pair based on currency code for example, {CAD-USD}"
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: A list of all exchange rates pairs for supported currencies
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/ExchangeRatePairs'
+                $ref: "#/components/schemas/ExchangeRatePairs"
 
   /modelAssetClass:
     get:
@@ -505,28 +504,28 @@ paths:
         - Portfolio Management
       summary: List of model asset class
       responses:
-        '200':
+        "200":
           description: A list of all model asset class objects for the authenticated user.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ModelAssetClassDetails'
+                  $ref: "#/components/schemas/ModelAssetClassDetails"
     post:
       tags:
         - Portfolio Management
       summary: Create a new model asset class
       responses:
-        '200':
+        "200":
           description: A new asset class is created.
           content:
             application/object:
               schema:
                 type: object
-                $ref: '#/components/schemas/ModelAssetClassDetails'
+                $ref: "#/components/schemas/ModelAssetClassDetails"
 
-  '/modelAssetClass/{modelAssetClassId}':
+  "/modelAssetClass/{modelAssetClassId}":
     get:
       tags:
         - Portfolio Management
@@ -537,15 +536,15 @@ paths:
           required: true
           description: The ID of the model asset class to get.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       responses:
-        '200':
+        "200":
           description: Details of a particular model asset class
           content:
             application/object:
               schema:
                 type: object
-                $ref: '#/components/schemas/ModelAssetClassDetails'
+                $ref: "#/components/schemas/ModelAssetClassDetails"
     post:
       tags:
         - Portfolio Management
@@ -556,19 +555,20 @@ paths:
           required: true
           description: The ID of the model asset class to update.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       requestBody:
         required: true
-        description: Use this endpoint change model asset class name and to add or remove a model asset class target.
-                     <br /><br /> * Only the model asset class name is required for the model asset class object.
-                     <br /> * Only the symbol id is required for the symbol object in the model asset class target object.
-                     <br /> * To remove all model asset class targets, set the model asset class target as an empty array
+        description:
+          Use this endpoint change model asset class name and to add or remove a model asset class target.
+          <br /><br /> * Only the model asset class name is required for the model asset class object.
+          <br /> * Only the symbol id is required for the symbol object in the model asset class target object.
+          <br /> * To remove all model asset class targets, set the model asset class target as an empty array
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ModelAssetClassDetails'
+              $ref: "#/components/schemas/ModelAssetClassDetails"
       responses:
-        '200':
+        "200":
           description: Updates model asset class with data from request body.
     delete:
       tags:
@@ -580,9 +580,9 @@ paths:
           required: true
           description: The ID of the model asset class to delete.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       responses:
-        '204':
+        "204":
           description: No content
 
   /modelPortfolio:
@@ -591,26 +591,26 @@ paths:
         - Portfolio Management
       summary: List of model portfolio
       responses:
-        '200':
+        "200":
           description: A list of all model portfolio objects for the authenticated user.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ModelPortfolioDetails'
+                  $ref: "#/components/schemas/ModelPortfolioDetails"
     post:
       tags:
         - Portfolio Management
       summary: Creates a new model portfolio
       responses:
-        '200':
+        "200":
           description: A new model portfolio is created.
           content:
             application/object:
               schema:
                 type: object
-                $ref: '#/components/schemas/ModelPortfolioDetails'
+                $ref: "#/components/schemas/ModelPortfolioDetails"
 
   /modelPortfolio/{modelPortfolioId}:
     get:
@@ -623,15 +623,15 @@ paths:
           required: true
           description: The ID of the model portfolio to get.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       responses:
-        '200':
+        "200":
           description: Details of a particular model portfolio.
           content:
             application/object:
               schema:
                 type: object
-                $ref: '#/components/schemas/ModelPortfolioDetails'
+                $ref: "#/components/schemas/ModelPortfolioDetails"
     post:
       tags:
         - Portfolio Management
@@ -642,10 +642,11 @@ paths:
           required: true
           description: The ID of the model portfolio to update.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       requestBody:
         required: true
-        description: Use this endpoint change model asset class name and to add or remove a model portfolio security/model portfolio asset class.
+        description:
+          Use this endpoint change model asset class name and to add or remove a model portfolio security/model portfolio asset class.
           <br /><br /> * The model portfolio name and model portfolio model type is required.
           <br /> * The model portfolio model type must be either 0 or 1. [0 -> Securities based, 1 -> Asset Class based]
           <br /><br /> * If the model portfolio type is 0, the model portfolio asset class must be an empty array.
@@ -656,9 +657,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ModelPortfolioDetails'
+              $ref: "#/components/schemas/ModelPortfolioDetails"
       responses:
-        '200':
+        "200":
           description: Updates model portfolio object with data from request body.
     delete:
       tags:
@@ -670,9 +671,9 @@ paths:
           required: true
           description: The ID of the model portfolio to delete.
           schema:
-            $ref: '#/components/schemas/Id'
+            $ref: "#/components/schemas/Id"
       responses:
-        '204':
+        "204":
           description: No content
 
   /portfolioGroups:
@@ -681,14 +682,14 @@ paths:
         - Portfolio Management
       summary: List all portfolio groups
       responses:
-        '200':
+        "200":
           description: A list of all PortfolioGroup objects for the authenticated user.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PortfolioGroup'
+                  $ref: "#/components/schemas/PortfolioGroup"
         default:
           description: Unexpected error.
     post:
@@ -696,20 +697,20 @@ paths:
         - Portfolio Management
       summary: Create new portfolio group
       responses:
-        '200':
+        "200":
           description: A new PortfolioGroup is created.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/PortfolioGroup'
-        '400':
+                $ref: "#/components/schemas/PortfolioGroup"
+        "400":
           description: The input data is missing or invalid.
         default:
           description: Unexpected error.
       requestBody:
-        $ref: '#/components/requestBodies/PortfolioGroup'
+        $ref: "#/components/requestBodies/PortfolioGroup"
 
-  '/portfolioGroups/{portfolioGroupId}':
+  "/portfolioGroups/{portfolioGroupId}":
     get:
       tags:
         - Portfolio Management
@@ -723,12 +724,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successfully gets a target portfolio
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/PortfolioGroup'
+                $ref: "#/components/schemas/PortfolioGroup"
         default:
           description: Unexpected error
     patch:
@@ -744,22 +745,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: The PortfolioGroup object which was updated.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/PortfolioGroup'
-        '400':
+                $ref: "#/components/schemas/PortfolioGroup"
+        "400":
           description: >-
             The specified portfolioGroupId is invalid (not a UUID string) or the
             input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
       requestBody:
-        $ref: '#/components/requestBodies/PortfolioGroup'
+        $ref: "#/components/requestBodies/PortfolioGroup"
     delete:
       tags:
         - Portfolio Management
@@ -773,20 +774,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: The PortfolioGroup object which was deleted.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/PortfolioGroup'
-        '400':
+                $ref: "#/components/schemas/PortfolioGroup"
+        "400":
           description: The specified portfolioGroupId is invalid (not a UUID string).
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
 
-  '/portfolioGroups/{portfolioGroupId}/accounts':
+  "/portfolioGroups/{portfolioGroupId}/accounts":
     get:
       tags:
         - Portfolio Management
@@ -800,18 +801,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Accounts linked to portfolio group
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: "#/components/schemas/Account"
         default:
           description: Unexpected error
 
-  '/portfolioGroups/{portfolioGroupId}/balances':
+  "/portfolioGroups/{portfolioGroupId}/balances":
     get:
       tags:
         - Portfolio Management
@@ -825,24 +826,24 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Sum of cash balances across accounts in portfolio group by currency
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Balance'
-        '400':
+                  $ref: "#/components/schemas/Balance"
+        "400":
           description: >-
             The specified portfolioGroupId is invalid (not a UUID string) or the
             input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
 
-  '/portfolioGroups/{portfolioGroupId}/calculatedtrades':
+  "/portfolioGroups/{portfolioGroupId}/calculatedtrades":
     get:
       tags:
         - Portfolio Management
@@ -856,13 +857,13 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Calculated trades to make
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/CalculatedTrade'
-  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/{TradeId}':
+                $ref: "#/components/schemas/CalculatedTrade"
+  "/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/{TradeId}":
     get:
       tags:
         - Portfolio Management
@@ -890,16 +891,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Trade objects
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Trade'
+                  $ref: "#/components/schemas/Trade"
 
-  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/impact':
+  "/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/impact":
     get:
       tags:
         - Trading
@@ -920,16 +921,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Impact of trades to make
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TradeImpact'
+                  $ref: "#/components/schemas/TradeImpact"
 
-  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/modify/{tradeId}':
+  "/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/modify/{tradeId}":
     get:
       tags:
         - Trading
@@ -958,12 +959,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Trade object
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/Trade'
+                $ref: "#/components/schemas/Trade"
     patch:
       tags:
         - Trading
@@ -992,19 +993,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Modified trade object
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/Trade'
+                $ref: "#/components/schemas/Trade"
       requestBody:
         content:
           application/object:
             schema:
-              $ref: '#/components/schemas/Trade'
+              $ref: "#/components/schemas/Trade"
 
-  '/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/placeOrders':
+  "/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/placeOrders":
     post:
       tags:
         - Trading
@@ -1025,16 +1026,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Return trade execution statuses for all trades submitted
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TradeExecutionStatus'
+                  $ref: "#/components/schemas/TradeExecutionStatus"
 
-  '/portfolioGroups/{portfolioGroupId}/excludedassets':
+  "/portfolioGroups/{portfolioGroupId}/excludedassets":
     get:
       tags:
         - Portfolio Management
@@ -1050,14 +1051,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Array of excluded assets linked to portfolio group
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ExcludedAsset'
+                  $ref: "#/components/schemas/ExcludedAsset"
         default:
           description: Unexpected error
     post:
@@ -1073,19 +1074,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: An asset is excluded from calculations in portfolio group.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/ExcludedAsset'
+                $ref: "#/components/schemas/ExcludedAsset"
       requestBody:
         content:
           application/object:
             schema:
-              $ref: '#/components/schemas/UniversalSymbol'
+              $ref: "#/components/schemas/UniversalSymbol"
 
-  '/portfolioGroups/{portfolioGroupId}/excludedassets/{symbolId}':
+  "/portfolioGroups/{portfolioGroupId}/excludedassets/{symbolId}":
     delete:
       tags:
         - Portfolio Management
@@ -1106,10 +1107,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Excluded asset deleted
 
-  '/portfolioGroups/{portfolioGroupId}/import':
+  "/portfolioGroups/{portfolioGroupId}/import":
     post:
       tags:
         - Portfolio Management
@@ -1123,18 +1124,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Portfolio group target allocation has been updated
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TargetAsset'
+                  $ref: "#/components/schemas/TargetAsset"
         default:
           description: Unexpected error.
 
-  '/portfolioGroups/{portfolioGroupId}/info':
+  "/portfolioGroups/{portfolioGroupId}/info":
     get:
       tags:
         - Portfolio Management
@@ -1150,16 +1151,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Portfolio group target allocation has been updated
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/PortfolioGroupInfo'
+                $ref: "#/components/schemas/PortfolioGroupInfo"
         default:
           description: Unexpected error.
 
-  '/portfolioGroups/{portfolioGroupId}/positions':
+  "/portfolioGroups/{portfolioGroupId}/positions":
     get:
       tags:
         - Portfolio Management
@@ -1173,24 +1174,24 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Totals of each postions owned in portfolio group
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PortfolioGroupPosition'
-        '400':
+                  $ref: "#/components/schemas/PortfolioGroupPosition"
+        "400":
           description: >-
             The specified portfolioGroupId is invalid (not a UUID string) or the
             input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
 
-  '/portfolioGroups/{portfolioGroupId}/settings':
+  "/portfolioGroups/{portfolioGroupId}/settings":
     get:
       tags:
         - Portfolio Management
@@ -1204,12 +1205,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Settings of portfolio group
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/PortfolioGroupSettings'
+                $ref: "#/components/schemas/PortfolioGroupSettings"
         default:
           description: Unexpected error
     patch:
@@ -1225,16 +1226,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Settings of portfolio group
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/PortfolioGroupSettings'
+                $ref: "#/components/schemas/PortfolioGroupSettings"
         default:
           description: Unexpected error
 
-  '/portfolioGroups/{portfolioGroupId}/symbols':
+  "/portfolioGroups/{portfolioGroupId}/symbols":
     post:
       tags:
         - Portfolio Management
@@ -1248,7 +1249,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: >-
             A list of UniversalSymbol objects which match the specified
             substring
@@ -1257,16 +1258,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UniversalSymbol'
+                  $ref: "#/components/schemas/UniversalSymbol"
         default:
           description: Unexpected error.
       requestBody:
         content:
           application/object:
             schema:
-              $ref: '#/components/schemas/SymbolQuery'
+              $ref: "#/components/schemas/SymbolQuery"
 
-  '/portfolioGroups/{portfolioGroupId}/targets':
+  "/portfolioGroups/{portfolioGroupId}/targets":
     get:
       tags:
         - Portfolio Management
@@ -1280,19 +1281,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: All target assets owned by the specified PortfolioGroup.
           content:
             application/object:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TargetAsset'
-        '400':
+                  $ref: "#/components/schemas/TargetAsset"
+        "400":
           description: >-
             The specified portfolioGroupId is invalid (not a UUID string) or the
             input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
@@ -1309,18 +1310,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: A new target asset or set of target assets is created.
           content:
             application/object:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/TargetAssetList'
-        '400':
+                  - $ref: "#/components/schemas/TargetAssetList"
+        "400":
           description: >-
             The specified portfolioGroupId is invalid (not a UUID string) or the
             input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId was not found.
         default:
           description: Unexpected error.
@@ -1329,9 +1330,9 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/TargetAssetList'
+                - $ref: "#/components/schemas/TargetAssetList"
 
-  '/portfolioGroups/{portfolioGroupId}/targets/{targetAssetId}':
+  "/portfolioGroups/{portfolioGroupId}/targets/{targetAssetId}":
     get:
       tags:
         - Portfolio Management
@@ -1352,12 +1353,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successfully get target asset.
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/TargetAsset'
+                $ref: "#/components/schemas/TargetAsset"
         default:
           description: Unexpected errors
     patch:
@@ -1380,22 +1381,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: The target asset is updated.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/TargetAsset'
-        '400':
+                $ref: "#/components/schemas/TargetAsset"
+        "400":
           description: >-
             The specified portfolioGroupId or targetAssetId is invalid (not a
             UUID string) or the input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId or targetAssetId was not found.
         default:
           description: Unexpected error.
       requestBody:
-        $ref: '#/components/requestBodies/TargetAsset'
+        $ref: "#/components/requestBodies/TargetAsset"
     delete:
       tags:
         - Portfolio Management
@@ -1416,17 +1417,17 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: The TargetAsset object which was deleted.
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/TargetAsset'
-        '400':
+                $ref: "#/components/schemas/TargetAsset"
+        "400":
           description: >-
             The specified portfolioGroupId or targetAssetId is invalid (not a
             UUID string) or the input data is invalid.
-        '404':
+        "404":
           description: The specified portfolioGroupId or targetAssetId was not found.
         default:
           description: Unexpected error.
@@ -1437,28 +1438,28 @@ paths:
         - Connections and Settings
       summary: Get the user's global account settings
       responses:
-        '200':
+        "200":
           description: Passiv user account settings
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/UserSettings'
+                $ref: "#/components/schemas/UserSettings"
     put:
       tags:
         - Connections and Settings
       summary: Update the user's global account settings
       responses:
-        '200':
+        "200":
           description: Passiv User account settings
           content:
             application/object:
               schema:
-                $ref: '#/components/schemas/UserSettings'
+                $ref: "#/components/schemas/UserSettings"
       requestBody:
         content:
           application/object:
             schema:
-              $ref: '#/components/schemas/UserSettings'
+              $ref: "#/components/schemas/UserSettings"
 
   /symbols:
     post:
@@ -1466,7 +1467,7 @@ paths:
         - Reference Data
       summary: Search for symbols
       responses:
-        '200':
+        "200":
           description: >-
             A list of UniversalSymbol objects which match the specified
             substring
@@ -1475,16 +1476,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UniversalSymbol'
+                  $ref: "#/components/schemas/UniversalSymbol"
         default:
           description: Unexpected error.
       requestBody:
         content:
           application/object:
             schema:
-              $ref: '#/components/schemas/SymbolQuery'
+              $ref: "#/components/schemas/SymbolQuery"
 
-  '/symbols/{symbolId}':
+  "/symbols/{symbolId}":
     get:
       tags:
         - Reference Data
@@ -1498,16 +1499,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successfully gets a symbol
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/UniversalSymbol'
+                $ref: "#/components/schemas/UniversalSymbol"
         default:
           description: Unexpected error
 
-  '/symbols/{ticker}':
+  "/symbols/{ticker}":
     get:
       tags:
         - Reference Data
@@ -1521,13 +1522,13 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successfully gets a symbol
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/UniversalSymbol'
-        '404':
+                $ref: "#/components/schemas/UniversalSymbol"
+        "404":
           description: No symbol with the specified ticker found.
         default:
           description: Unexpected error
@@ -1554,7 +1555,7 @@ components:
   requestBodies:
     MockSignatureRequestBody:
       description: Request body to signed. Include it under "content"
-      content: 
+      content:
         application/json:
           schema:
             type: object
@@ -1563,37 +1564,37 @@ components:
               userSecret: CHRIS.P.BACON
     RegisterUserRequestBody:
       required: true
-      content: 
+      content:
         application/json:
           schema:
             $ref: "#/components/schemas/SnapTradeRegisterUserRequestBody"
     LoginRequestBody:
       required: true
-      content: 
+      content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserIDandSecret"
     DeleteUserRequestBody:
       required: true
-      content: 
+      content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserIDandSecret"    
+            $ref: "#/components/schemas/UserIDandSecret"
     RedeemTokenRequestBody:
       required: true
-      content: 
+      content:
         application/json:
           schema:
             $ref: "#/components/schemas/RedirectTokenandPin"
     PortfolioGroup:
       required: true
-      content: 
+      content:
         application/json:
           schema:
             $ref: "#/components/schemas/PortfolioGroup"
     TargetAsset:
       required: true
-      content: 
+      content:
         application/json:
           schema:
             $ref: "#/components/schemas/TargetAsset"
@@ -1602,7 +1603,7 @@ components:
       description: Example for failed request response
       type: object
       properties:
-        default_detail: 
+        default_detail:
           example: "Unable to verify data sent"
         default_code:
           example: 1076
@@ -1610,7 +1611,7 @@ components:
       description: Example for failed request response
       type: object
       properties:
-        default_detail: 
+        default_detail:
           example: "User does not have permission to access this resource"
         default_code:
           example: 1066
@@ -1618,7 +1619,7 @@ components:
       description: Example for failed request response
       type: object
       properties:
-        default_detail: 
+        default_detail:
           example: "The requested resource does not exist."
         default_code:
           example: 1011
@@ -1626,7 +1627,7 @@ components:
       description: SnapTradeUser Investment Account
       type: object
       properties:
-        brokerage: 
+        brokerage:
           type: string
           example: Passiv Investr
         number:
@@ -1638,23 +1639,23 @@ components:
     AccountHoldings:
       description: Account Holdings
       type: object
-      properties: 
-        account: 
-          $ref: '#/components/schemas/Account'
-        balances: 
+      properties:
+        account:
+          $ref: "#/components/schemas/Account"
+        balances:
           type: array
-          items: 
-            $ref: '#/components/schemas/Balance'
+          items:
+            $ref: "#/components/schemas/Balance"
         positions:
           type: array
           items:
-            $ref: '#/components/schemas/Position'
+            $ref: "#/components/schemas/Position"
     Balance:
       description: Account Balance
       type: object
       properties:
         currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         cash:
           type: number
           example: 300.71
@@ -1683,11 +1684,12 @@ components:
         code:
           type: string
           example: NYSE
-        name: 
+        name:
           type: string
           example: New York Stock Exchange
     JWT:
-      description: JWT Token. Used to acess resources in private endpoints available
+      description:
+        JWT Token. Used to acess resources in private endpoints available
         only through the Passiv app
       type: object
       properties:
@@ -1699,18 +1701,18 @@ components:
       description: Redirect uri upon successful login
       type: object
       properties:
-        redirectURI: 
+        redirectURI:
           example: "https://app.passiv.com/snapTrade/redeemToken?token=this$token1does2ntactu4allyexist=="
     MockSignatureResponse:
       description: Mock Signature Response
       type: object
       properties:
         mockConsumerKey:
-          $ref: '#/components/schemas/ConsumerKey'
+          $ref: "#/components/schemas/ConsumerKey"
         signedContent:
-          $ref: '#/components/schemas/SignedContent'
+          $ref: "#/components/schemas/SignedContent"
         signature:
-          $ref: '#/components/schemas/Signature'
+          $ref: "#/components/schemas/Signature"
     ClientID:
       description: SnapTrade Client ID (generated and provided to partner by Passiv)
       type: string
@@ -1720,7 +1722,7 @@ components:
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/Symbol'
+          $ref: "#/components/schemas/Symbol"
         units:
           type: number
           example: 40
@@ -1743,9 +1745,9 @@ components:
           * Prepare signed content (see SignedContent schema)
           * Sign content prepared above with HMAC-SHA256 using the UTF-8 encoding
           * Return base64 encoding of sign content along with headers
-        
+
          Note: Use the shared consumer key provided by Passiv to signed the request
-        
+
         Example python code
         ```
         import hmac
@@ -1753,21 +1755,21 @@ components:
         from base64 import b64encode
         from hashlib import sha256
         from urllib.parse import urlencode
-        
+
         consumer_key = "UxrFb4cHdRWlmJKNuJjA6hoaN8uVa6jPGFVUl2UKHuKmurCnaU".encode()
-        
+
         request_data = {'userId': 'api@passiv.com', 'userSecret': 'CHRIS.P.BACON'}
         request_path = "/api/v1/snapTrade/mockSignature"
         request_query = "clientId=PASSIVTEST&timestamp=1635790389"
 
         sig_object = {"content": request_data, "path": request_path, "query": request_query}
-        
+
         sig_content = json.dumps(sig_object, separators=(",", ":"), sort_keys=True)
         sig_digest = hmac.new(consumer_key, sig_content.encode(), sha256).digest()
-        
+
         signature = b64encode(sig_digest).decode()
         ```
-       
+
       type: string
       example: "QJPQgW0Y8mWbG9Whw/fhCYofIgSo/UAo2AIc1bBPMnY="
     SignedContent:
@@ -1776,31 +1778,31 @@ components:
         * content -> Content included in request body, set to null if no content is included. Sort keys in content alphabetically
         * path -> Url path of request submitted
         * query -> Query params included in requests
-        
+
         After preparing the key-value pairs, sort them alphabetically and convert them
         into a string. 
-        
+
         Note:
         Remove any extra whitespace characters and delimiters from the signed content. 
-        
+
         For example, some JSON rendering engines will produce output like this: 
-        
+
           -- `{"blue": "moon", "hello": "world"}`
             
         To produce the correct signature, the JSON should be processed to look like this:
           
           -- `{"blue":"moon","hello":"world"}`
-          
+
       type: string
-      example: "{\"content\":{\"userId\":\"api@passiv.com\",\"userSecret\":\"CHRIS.P.BACON\"},\"path\":\"/api/v1/snapTrade/mockSignature\",\"query\":\"clientId=PASSIVTEST&timestamp=1635790389\"}"
+      example: '{"content":{"userId":"api@passiv.com","userSecret":"CHRIS.P.BACON"},"path":"/api/v1/snapTrade/mockSignature","query":"clientId=PASSIVTEST&timestamp=1635790389"}'
     SnapTradeRegisterUserRequestBody:
       description: Data required to register a user via SnapTrade Partner
       type: object
       properties:
-        userId: 
-          $ref: '#/components/schemas/SnapTradeUserID'
+        userId:
+          $ref: "#/components/schemas/SnapTradeUserID"
     SnapTradeUserID:
-      description: SnapTrade User ID. Provided by SnapTrade Partner. Can be any 
+      description: SnapTrade User ID. Provided by SnapTrade Partner. Can be any
         string, as long as it's unique to a user
       type: string
       example: api@passiv.com
@@ -1808,24 +1810,24 @@ components:
       description: SnapTrade User Secret randomly generated by Passiv.
       type: string
       example: h81@cx1lkalablakwjaltkejraj11=
-    Symbol: 
+    Symbol:
       description: Symbol
       type: object
       properties:
-        symbol: 
+        symbol:
           type: string
           example: DIS
         name:
           type: string
           example: The Walt Disney Company
         currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         exchange:
-          $ref: '#/components/schemas/Exchange'
+          $ref: "#/components/schemas/Exchange"
     Timestamp:
-      externalDocs: 
-        "url": 'https://en.wikipedia.org/wiki/Unix_time'
-      description: Unix Epoch time 
+      externalDocs:
+        "url": "https://en.wikipedia.org/wiki/Unix_time"
+      description: Unix Epoch time
       type: integer
       example: 1635790389
     UserIDandSecret:
@@ -1833,9 +1835,9 @@ components:
       type: object
       properties:
         userId:
-          $ref: '#/components/schemas/SnapTradeUserID'
+          $ref: "#/components/schemas/SnapTradeUserID"
         userSecret:
-          $ref: '#/components/schemas/SnapTradeUserSecret'
+          $ref: "#/components/schemas/SnapTradeUserSecret"
     DeleteUserResponse:
       description: Response when delete user is successful
       type: object
@@ -1845,7 +1847,7 @@ components:
           example: deleted
           description: Delete status
         userId:
-          $ref: '#/components/schemas/SnapTradeUserID'
+          $ref: "#/components/schemas/SnapTradeUserID"
     BrokerageAuthorizationType:
       type: object
       properties:
@@ -1858,27 +1860,27 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         name:
           type: string
           example: Questrade
         url:
           type: string
           format: url
-          example: 'https://www.questrade.com/'
+          example: "https://www.questrade.com/"
         authorization_types:
           type: array
           items:
-            $ref: '#/components/schemas/BrokerageAuthorizationType'
+            $ref: "#/components/schemas/BrokerageAuthorizationType"
     BrokerageAuthorization:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         created:
-          $ref: '#/components/schemas/Timestamp'
+          $ref: "#/components/schemas/Timestamp"
         brokerage:
-          $ref: '#/components/schemas/Brokerage'
+          $ref: "#/components/schemas/Brokerage"
         type:
           type: string
           example: trade
@@ -1887,11 +1889,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         brokerage_authorization:
-          $ref: '#/components/schemas/BrokerageAuthorization'
+          $ref: "#/components/schemas/BrokerageAuthorization"
         description:
           type: string
           example: VANGUARD CDN AGGREGATE BOND INDEX ETF
@@ -1900,11 +1902,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         trades:
           type: array
           items:
-            $ref: '#/components/schemas/Trade'
+            $ref: "#/components/schemas/Trade"
     Email:
       type: string
       format: email
@@ -1914,9 +1916,9 @@ components:
       type: object
       properties:
         src:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         dst:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         exchange_rate:
           type: number
           example: 1.32
@@ -1925,7 +1927,7 @@ components:
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
     Id:
       type: string
       format: uuid
@@ -1934,8 +1936,8 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
-          example: '06fe1fd7-fc50-43a7-b564-8a2c5f3bab44'
+          $ref: "#/components/schemas/Id"
+          example: "06fe1fd7-fc50-43a7-b564-8a2c5f3bab44"
         name:
           type: string
           example: Bonds
@@ -1943,27 +1945,27 @@ components:
       type: object
       properties:
         model_asset_class:
-          $ref: '#/components/schemas/ModelAssetClass'
+          $ref: "#/components/schemas/ModelAssetClass"
         model_asset_class_target:
           type: array
           items:
-            $ref: '#/components/schemas/ModelAssetClassTarget'
+            $ref: "#/components/schemas/ModelAssetClassTarget"
     ModelAssetClassTarget:
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
     ModelPortfolio:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
-          example: '06fe1fd7-fc50-43a7-b564-8a2c5f3bab44'
+          $ref: "#/components/schemas/Id"
+          example: "06fe1fd7-fc50-43a7-b564-8a2c5f3bab44"
         name:
           type: string
           example: Passiv 5x Aggressive Growth Fund
         model_type:
-          description: 'Enum definitions -> [-1: Unassigned, 0: Security Model Portfolio, 1: Asset Class Portfolio]'
+          description: "Enum definitions -> [-1: Unassigned, 0: Security Model Portfolio, 1: Asset Class Portfolio]"
           type: integer
           enum: [-1, 0, 1]
           default: -1
@@ -1971,7 +1973,7 @@ components:
       type: object
       properties:
         model_asset_class:
-          $ref: '#/components/schemas/ModelAssetClass'
+          $ref: "#/components/schemas/ModelAssetClass"
         percent:
           type: integer
           minimum: 0
@@ -1981,20 +1983,20 @@ components:
       type: object
       properties:
         model_portfolio:
-          $ref: '#/components/schemas/ModelPortfolio'
+          $ref: "#/components/schemas/ModelPortfolio"
         model_portfolio_security:
           type: array
           items:
-            $ref: '#/components/schemas/ModelPortfolioSecurity'
+            $ref: "#/components/schemas/ModelPortfolioSecurity"
         model_portfolio_asset_class:
           type: array
           items:
-            $ref: '#/components/schemas/ModelPortfolioAssetClass'
+            $ref: "#/components/schemas/ModelPortfolioAssetClass"
     ModelPortfolioSecurity:
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         percent:
           type: integer
           minimum: 0
@@ -2009,7 +2011,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         name:
           type: string
           example: Combined Retirement Portfolio
@@ -2020,50 +2022,50 @@ components:
         symbols:
           type: array
           items:
-            $ref: '#/components/schemas/UniversalSymbol'
+            $ref: "#/components/schemas/UniversalSymbol"
         quotable_symbols:
           type: array
           items:
-            $ref: '#/components/schemas/UniversalSymbol'
+            $ref: "#/components/schemas/UniversalSymbol"
         balances:
           type: array
           items:
-            $ref: '#/components/schemas/Balance'
+            $ref: "#/components/schemas/Balance"
         positions:
           type: array
           items:
-            $ref: '#/components/schemas/Position'
+            $ref: "#/components/schemas/Position"
         target_positions:
           type: array
           items:
-            $ref: '#/components/schemas/TargetAsset'
+            $ref: "#/components/schemas/TargetAsset"
         ideal_positions:
           type: array
           items:
-            $ref: '#/components/schemas/Position'
+            $ref: "#/components/schemas/Position"
         excluded_positions:
           type: array
           items:
-            $ref: '#/components/schemas/ExcludedAsset'
+            $ref: "#/components/schemas/ExcludedAsset"
         calculated_trades:
           type: array
           items:
-            $ref: '#/components/schemas/CalculatedTrade'
+            $ref: "#/components/schemas/CalculatedTrade"
         brokerage_authorizations:
           type: array
           items:
-            $ref: '#/components/schemas/BrokerageAuthorization'
+            $ref: "#/components/schemas/BrokerageAuthorization"
         accuracy:
           type: number
           example: 0.962
         settings:
-          $ref: '#/components/schemas/PortfolioGroupSettings'
+          $ref: "#/components/schemas/PortfolioGroupSettings"
     PortfolioGroupPosition:
       description: Details of a security held
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         price:
           type: number
           example: 24.81
@@ -2081,11 +2083,11 @@ components:
           example: true
         notifyFrequency:
           type: string
-          example: '7 00:00:00'
+          example: "7 00:00:00"
         driftThreshold:
-          $ref: '#/components/schemas/Percent'
+          $ref: "#/components/schemas/Percent"
         preferred_currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
     Status:
       description: Status of API
       type: object
@@ -2094,7 +2096,7 @@ components:
           type: string
           example: "1.0"
         timestamp:
-          $ref: '#/components/schemas/Timestamp'
+          $ref: "#/components/schemas/Timestamp"
         online:
           type: boolean
           example: true
@@ -2110,11 +2112,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         percent:
-          $ref: '#/components/schemas/Percent'
+          $ref: "#/components/schemas/Percent"
         is_supported:
           type: boolean
           example: true
@@ -2127,19 +2129,19 @@ components:
       description: Target percentage of a certain asset
       type: array
       items:
-        $ref: '#/components/schemas/TargetAsset'
+        $ref: "#/components/schemas/TargetAsset"
     Trade:
       description: A trade object
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         account:
-          $ref: '#/components/schemas/Account'
+          $ref: "#/components/schemas/Account"
         symbol:
-          $ref: '#/components/schemas/BrokerageSymbol'
+          $ref: "#/components/schemas/BrokerageSymbol"
         universal_symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         action:
           type: string
           enum:
@@ -2164,11 +2166,11 @@ components:
       type: object
       properties:
         symbol:
-          $ref: '#/components/schemas/BrokerageSymbol'
+          $ref: "#/components/schemas/BrokerageSymbol"
         universal_symbol:
-          $ref: '#/components/schemas/UniversalSymbol'
+          $ref: "#/components/schemas/UniversalSymbol"
         trade:
-          $ref: '#/components/schemas/Trade'
+          $ref: "#/components/schemas/Trade"
         state:
           type: string
           description: Execution state of a trade
@@ -2208,9 +2210,9 @@ components:
       type: object
       properties:
         account:
-          $ref: '#/components/schemas/Account'
+          $ref: "#/components/schemas/Account"
         currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         remaining_cash:
           type: number
           description: Remaining balance after executing all trades
@@ -2228,7 +2230,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         symbol:
           type: string
           example: VAB.TO
@@ -2236,13 +2238,13 @@ components:
           type: string
           example: VANGUARD CDN AGGREGATE BOND INDEX ETF
         currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
     UserSettings:
       description: Passiv user account settings
       type: object
       properties:
         email:
-          $ref: '#/components/schemas/Email'
+          $ref: "#/components/schemas/Email"
         name:
           type: string
           example: James Bond
@@ -2258,7 +2260,7 @@ components:
         activated_trial_date:
           type: string
           format: dateTime
-          example: '2017-07-17T15:13:07.177712+00:00'
+          example: "2017-07-17T15:13:07.177712+00:00"
         demo:
           type: boolean
           example: false
@@ -2269,4 +2271,4 @@ components:
           type: number
           example: 95.0
         preferred_currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
