@@ -1424,7 +1424,43 @@ paths:
           description: Unexpected error
 
 
+#        parameters: 
+#        - in: header
+#          required: true
+#          name: Signature
+#          schema:
+#            $ref: '#/components/schemas/Signature'
+#        - in: query
+#          required: true
+#          name: clientId
+#          schema: 
+#            $ref: '#/components/schemas/ClientID'
+#        - in: query
+#          required: true
+#          name: timestamp
+#          schema:
+#            $ref: '#/components/schemas/Timestamp'
+#        - in: query
+#          required: true
+#          name: userId
+#          schema:
+#            $ref: '#/components/schemas/SnapTradeUserID'
+#        - in: query
+#          name: accounts
+#          description: Filter holdings by account number
+#          schema: 
+#            type: string
+#            example: P1334567
+
 components:
+  securitySchemes:
+    PartnerAuth:
+      type: apiKey
+      in: header
+      name: Signature
+      schema:
+        $ref: '#/components/schemas/Signature'
+
   requestBodies:
     MockSignatureRequestBody:
       description: Request body to signed. Include it under "content"
