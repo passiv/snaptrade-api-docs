@@ -35,6 +35,8 @@ tags:
     description: Manage orders on user accounts
   - name: Portfolio Management
     description: Create portfolio groups, model portfolios, and trade calculations for rebalancing.
+  - name: Reporting
+    description: Retrieve information on account transactions, performance, contributions, etc.
 
 paths:
   /:
@@ -400,7 +402,58 @@ paths:
             format: uuid
         - in: query
           name: status
-          $ref: "#/components/schemas/Id"
+          description: defaults value is set to "all"
+          schema:
+            type: string
+            enum:
+              - all
+              - open
+              - executed
+        - in: query
+          name: days
+          description: filter query by number of days since current day. Defaults to 90
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List all orders in account
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountOrderRecord"
+        "500":
+          description: Unexpected error
+  
+  "/accounts/{accountId}/orders/cancel":
+    post:
+      tags:
+        - Trading
+      summary: Cancel open order in account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Order Record of canceled order
+          content:
+            application/object:
+              schema:
+                $ref: "#/components/schemas/AccountOrderRecord"
+        "400":
+          description: Unable to cancel open order. Please verify status in brokerage account
+          content:
+            application/object:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        "500":
+          description: Unexpected error
 
   /authorizations:
     get:
@@ -1554,7 +1607,7 @@ paths:
     post:
       tags:
         - Trading
-      summary: Check impact of trades on account. 
+      summary: Check impact of trades on account.
       responses:
         "200":
           description: Return trade object and it's impact on the account
@@ -1583,7 +1636,7 @@ paths:
     post:
       tags:
         - Trading
-      summary: Place order 
+      summary: Place order
       parameters:
         - in: path
           name: tradeId
@@ -1606,6 +1659,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/400FailedRequestResponse"
         "500":
+          description: Unexpected Error
+  "/activities/":
+    get:
+      tags:
+        - Reporting
+      summary: Get transaction history for a user
+      description: Returns activities (transactions) for a user. Optionally can specify timeframe with start and end date
+      parameters:
+        - in: query
+          required: false
+          name: startDate
+          schema:
+            $ref: "#/components/schemas/ReportingDate"
+        - in: query
+          required: false
+          name: endDate
+          schema:
+            $ref: "#/components/schemas/ReportingDate"
+      responses:
+        "200":
+          description: Successfully retrieved transaction history
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UniversalActivity"
+
+        default:
           description: Unexpected error
 
 components:
@@ -1677,7 +1759,7 @@ components:
       required: true
       content:
         application/json:
-          schema: 
+          schema:
             $ref: "#/components/schemas/ManualTradeForm"
   schemas:
     400FailedRequestResponse:
@@ -1777,26 +1859,26 @@ components:
     AccountOrderRecordStatus:
       type: string
       enum:
-        - NONE 
-        - PENDING 
-        - ACCEPTED 
-        - FAILED 
+        - NONE
+        - PENDING
+        - ACCEPTED
+        - FAILED
         - REJECTED
-        - CANCELED 
-        - PARTIAL_CANCELED 
-        - CANCEL_PENDING 
-        - EXECUTED 
-        - PARTIAL 
-        - REPLACE_PENDING 
-        - REPLACED 
-        - STOPPED 
-        - SUSPENDED 
-        - EXPIRED 
-        - QUEUED 
-        - TRIGGERED 
-        - ACTIVATED 
-        - PENDING_RISK_REVIEW 
-        - CONTINGENT_ORDER 
+        - CANCELED
+        - PARTIAL_CANCELED
+        - CANCEL_PENDING
+        - EXECUTED
+        - PARTIAL
+        - REPLACE_PENDING
+        - REPLACED
+        - STOPPED
+        - SUSPENDED
+        - EXPIRED
+        - QUEUED
+        - TRIGGERED
+        - ACTIVATED
+        - PENDING_RISK_REVIEW
+        - CONTINGENT_ORDER
     Balance:
       description: Account Balance
       type: object
@@ -1927,17 +2009,17 @@ components:
         * query -> Query params included in requests
 
         After preparing the key-value pairs, sort them alphabetically and convert them
-        into a string. 
+        into a string.
 
         Note:
-        Remove any extra whitespace characters and delimiters from the signed content. 
+        Remove any extra whitespace characters and delimiters from the signed content.
 
-        For example, some JSON rendering engines will produce output like this: 
+        For example, some JSON rendering engines will produce output like this:
 
           -- `{"blue": "moon", "hello": "world"}`
-            
+
         To produce the correct signature, the JSON should be processed to look like this:
-          
+
           -- `{"blue":"moon","hello":"world"}`
 
       type: string
@@ -2235,6 +2317,10 @@ components:
           $ref: "#/components/schemas/Percent"
         preferred_currency:
           $ref: "#/components/schemas/Currency"
+    ReportingDate:
+      description: Date used to specify timeframe for a reporting call (in YYYY-MM-DD format)
+      type: string
+      example: "2022-01-24"
     Status:
       description: Status of API
       type: object
@@ -2445,7 +2531,7 @@ components:
           $ref: "#/components/schemas/OrderType"
         price:
           $ref: "#/components/schemas/Price"
-        time_in_force: 
+        time_in_force:
           $ref: "#/components/schemas/TimeInForce"
         units:
           $ref: "#/components/schemas/Units"
@@ -2466,15 +2552,15 @@ components:
         Trade time in force:
           * FOK - Fill Or Kill
           * Day - Day
-      
+
       type: string
-      enum: 
+      enum:
         - Day
         - FOK
     Action:
       description: Trade Action
       type: string
-      enum: 
+      enum:
         - BUY
         - SELL
     Units:
@@ -2484,6 +2570,44 @@ components:
       description: Trade Price
       type: number
       example: 31.33
+    UniversalActivity:
+      description: A transaction or activity from an institution
+      type: object
+      properties:
+        account:
+          $ref: "#/components/schemas/Account"
+        amount:
+          type: number
+          example: 263.82
+        currency:
+          $ref: "#/components/schemas/Currency"
+        description:
+          type: string
+          example: "WALT DISNEY UNIT DIST ON 21 SHS REC 12/31/21 PAY 01/06/22"
+        fee:
+          type: number
+          example: 0.00
+        institution:
+          type: string
+          example: Passiv Investr
+        price:
+          type: number
+          example: 0.40
+        settlement_date:
+          type: string
+          example: "2022-01-06T05:00:00Z"
+        symbol:
+          $ref: "#/components/schemas/Symbol"
+        trade_date:
+          type: string
+          example: "2022-01-06T05:00:00Z"
+        type:
+          type: string
+          enum: [DIVIDEND, BUY, SELL, CONTRIBUTION, WITHDRAWAL, EXTERNAL_ASSET_TRANSFER_IN, EXTERNAL_ASSET_TRANSFER_OUT, INTERNAL_CASH_TRANSFER_IN, INTERNAL_CASH_TRANSFER_OUT, INTERNAL_ASSET_TRANSFER_IN, INTERNAL_ASSET_TRANSFER_OUT, INTEREST, REBATE, GOV_GRANT, TAX, FEE]
+        units:
+          type: number
+          description: Usually but not necessarily an integer
+          example: 5
     UniversalSymbol:
       description: Universal symbol
       type: object
