@@ -387,6 +387,74 @@ paths:
         default:
           description: Unexpected error
 
+  "/accounts/{accountId}/orders":
+    get:
+      tags:
+        - Trading
+      summary: Get all history of orders placed in account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: status
+          description: defaults value is set to "all"
+          schema:
+            type: string
+            enum:
+              - all
+              - open
+              - executed
+        - in: query
+          name: days
+          description: filter query by number of days since current day. Defaults to 90
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List all orders in account
+          content:
+            application/object:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountOrderRecord"
+        "500":
+          description: Unexpected error
+  
+  "/accounts/{accountId}/orders/cancel":
+    post:
+      tags:
+        - Trading
+      summary: Cancel open order in account
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Order Record of canceled order
+          content:
+            application/object:
+              schema:
+                $ref: "#/components/schemas/AccountOrderRecord"
+        "400":
+          description: Unable to cancel open order. Please verify status in brokerage account
+          content:
+            application/object:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        "500":
+          description: Unexpected error
+
   /authorizations:
     get:
       tags:
@@ -1535,6 +1603,63 @@ paths:
         default:
           description: Unexpected error
 
+  "/trade/impact":
+    post:
+      tags:
+        - Trading
+      summary: Check impact of trades on account.
+      responses:
+        "200":
+          description: Return trade object and it's impact on the account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManualTradeAndImpact"
+        "400":
+          description: Missing or wrong data format provided in request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        "403":
+          description: User does not have permissions to place trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403FailedRequestResponse"
+        "500":
+          description: Unexpected Error
+      requestBody:
+          $ref: "#/components/requestBodies/ManualTradeFormRequestBody"
+
+  "/trade/{tradeId}":
+    post:
+      tags:
+        - Trading
+      summary: Place order
+      parameters:
+        - in: path
+          name: tradeId
+          required: true
+          description: The ID of trade object obtain from trade/impact endpoint
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Status of order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountOrderRecord"
+        "400":
+          description: Failed to submit order to broker
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400FailedRequestResponse"
+        "500":
+          description: Unexpected Error
   "/activities/":
     get:
       tags:
@@ -1561,7 +1686,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UniversalActivity"
-          
+
         default:
           description: Unexpected error
 
@@ -1630,6 +1755,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/TargetAsset"
+    ManualTradeFormRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ManualTradeForm"
   schemas:
     400FailedRequestResponse:
       description: Example for failed request response
@@ -1659,6 +1790,8 @@ components:
       description: SnapTradeUser Investment Account
       type: object
       properties:
+        id:
+          $ref: "#/components/schemas/Id"
         brokerage:
           type: string
           example: Passiv Investr
@@ -1682,6 +1815,70 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Position"
+    AccountOrderRecord:
+      description: Record of order in brokerageaccount
+      type: object
+      properties:
+        brokerage_order_id:
+          description: Order id returned by brokerage
+          type: string
+        status:
+          description: Status of order
+          $ref: "#/components/schemas/AccountOrderRecordStatus"
+        symbol:
+          description: Brokerage symbol id
+          $ref: "#/components/schemas/Id"
+        universal_symbol:
+          $ref: "#/components/schemas/UniversalSymbol"
+        action:
+          $ref: "#/components/schemas/Action"
+        total_quantity:
+          $ref: "#/components/schemas/Units"
+        open_quantity:
+          $ref: "#/components/schemas/Units"
+        canceled_quantity:
+          $ref: "#/components/schemas/Units"
+        filled_quantity:
+          $ref: "#/components/schemas/Units"
+        execution_price:
+          $ref: "#/components/schemas/Price"
+        limit_price:
+          $ref: "#/components/schemas/Price"
+        stop_price:
+          $ref: "#/components/schemas/Price"
+        order_type":
+          $ref: "#/components/schemas/OrderType"
+        time_in_force:
+          $ref: "#/components/schemas/TimeInForce"
+        time_placed:
+          $ref: "#/components/schemas/OrderType"
+        time_updated:
+          $ref: "#/components/schemas/Time"
+        expiry_date:
+          $ref: "#/components/schemas/Time"
+    AccountOrderRecordStatus:
+      type: string
+      enum:
+        - NONE
+        - PENDING
+        - ACCEPTED
+        - FAILED
+        - REJECTED
+        - CANCELED
+        - PARTIAL_CANCELED
+        - CANCEL_PENDING
+        - EXECUTED
+        - PARTIAL
+        - REPLACE_PENDING
+        - REPLACED
+        - STOPPED
+        - SUSPENDED
+        - EXPIRED
+        - QUEUED
+        - TRIGGERED
+        - ACTIVATED
+        - PENDING_RISK_REVIEW
+        - CONTINGENT_ORDER
     Balance:
       description: Account Balance
       type: object
@@ -1812,17 +2009,17 @@ components:
         * query -> Query params included in requests
 
         After preparing the key-value pairs, sort them alphabetically and convert them
-        into a string. 
+        into a string.
 
         Note:
-        Remove any extra whitespace characters and delimiters from the signed content. 
+        Remove any extra whitespace characters and delimiters from the signed content.
 
-        For example, some JSON rendering engines will produce output like this: 
+        For example, some JSON rendering engines will produce output like this:
 
           -- `{"blue": "moon", "hello": "world"}`
-            
+
         To produce the correct signature, the JSON should be processed to look like this:
-          
+
           -- `{"blue":"moon","hello":"world"}`
 
       type: string
@@ -2261,6 +2458,118 @@ components:
           type: number
           description: Estimated forex fees to pay to excute trades
           example: 2.01
+    ManualTrade:
+      description: A manual trade object
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        account:
+          $ref: "#/components/schemas/Account"
+        order_type:
+          $ref: "#components/schemas/OrderType"
+        time_in_force:
+          $ref: "#components/schemas/TimeInForce"
+        symbol:
+          $ref: "#components/schemas/ManualTradeSymbol"
+        action:
+          $ref: "#components/schemas/Action"
+        units:
+          $ref: "#components/schemas/Units"
+        price:
+          $ref: "#components/schemas/Price"
+    ManualTradeSymbol:
+      description: Manual trade symbol object
+      type: object
+      properties:
+        brokerage_symbol_id:
+          $ref: "#/components/schemas/Id"
+        universal_symbol_id:
+          $ref: "#/components/schemas/Id"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        local_id:
+          type: string
+          example: 1048101
+        description:
+          type: string
+          example: Metaverse Global ETF
+        symbol:
+          type: string
+          example: MVGP.U.TO
+    ManualTradeBalance:
+      description: Balance
+      type: object
+      properties:
+        account:
+          $ref: "#/components/schemas/Account"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        cash:
+          $ref: "#/components/schemas/Cash"
+    ManualTradeAndImpact:
+      description: Manual Trade and Impact object
+      type: object
+      properties:
+        trade:
+          $ref: "#/components/schemas/ManualTrade"
+        trade_impacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualTrade"
+        combined_remaining_balance:
+          $ref: "#/components/schemas/ManualTradeBalance"
+    ManualTradeForm:
+      description: Manual Trade Form
+      type: object
+      properties:
+        account_id:
+          $ref: "#/components/schemas/Id"
+        action:
+          $ref: "#/components/schemas/Action"
+        order_type:
+          $ref: "#/components/schemas/OrderType"
+        price:
+          $ref: "#/components/schemas/Price"
+        time_in_force:
+          $ref: "#/components/schemas/TimeInForce"
+        units:
+          $ref: "#/components/schemas/Units"
+        universal_symbol_id:
+          $ref: "#/components/schemas/Id"
+    Cash:
+      description: Cash
+      type: number
+      example: 1.11
+    OrderType:
+      description: Order Type
+      type: string
+      enum:
+        - Limit
+        - Market
+    TimeInForce:
+      description: |
+        Trade time in force:
+          * FOK - Fill Or Kill
+          * Day - Day
+
+      type: string
+      enum:
+        - Day
+        - FOK
+    Action:
+      description: Trade Action
+      type: string
+      enum:
+        - BUY
+        - SELL
+    Units:
+      description: Trade Units
+      type: number
+    Price:
+      description: Trade Price
+      type: number
+      example: 31.33
     UniversalActivity:
       description: A transaction or activity from an institution
       type: object
@@ -2346,3 +2655,7 @@ components:
           example: 95.0
         preferred_currency:
           $ref: "#/components/schemas/Currency"
+    Time:
+      description: Time
+      type: string
+      example: 2022-01-21T15:11:19.217000-05:00
