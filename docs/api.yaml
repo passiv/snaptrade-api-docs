@@ -44,6 +44,7 @@ paths:
       tags:
         - API Status
       summary: Get API Status
+      description: TEST DESCRIPTION
       security: []
       responses:
         "200":
@@ -425,7 +426,7 @@ paths:
                   $ref: "#/components/schemas/AccountOrderRecord"
         "500":
           description: Unexpected error
-  
+
   "/accounts/{accountId}/orders/cancel":
     post:
       tags:
@@ -1630,7 +1631,7 @@ paths:
         "500":
           description: Unexpected Error
       requestBody:
-          $ref: "#/components/requestBodies/ManualTradeFormRequestBody"
+        $ref: "#/components/requestBodies/ManualTradeFormRequestBody"
 
   "/trade/{tradeId}":
     post:
@@ -2603,7 +2604,25 @@ components:
           example: "2022-01-06T05:00:00Z"
         type:
           type: string
-          enum: [DIVIDEND, BUY, SELL, CONTRIBUTION, WITHDRAWAL, EXTERNAL_ASSET_TRANSFER_IN, EXTERNAL_ASSET_TRANSFER_OUT, INTERNAL_CASH_TRANSFER_IN, INTERNAL_CASH_TRANSFER_OUT, INTERNAL_ASSET_TRANSFER_IN, INTERNAL_ASSET_TRANSFER_OUT, INTEREST, REBATE, GOV_GRANT, TAX, FEE]
+          enum:
+            [
+              DIVIDEND,
+              BUY,
+              SELL,
+              CONTRIBUTION,
+              WITHDRAWAL,
+              EXTERNAL_ASSET_TRANSFER_IN,
+              EXTERNAL_ASSET_TRANSFER_OUT,
+              INTERNAL_CASH_TRANSFER_IN,
+              INTERNAL_CASH_TRANSFER_OUT,
+              INTERNAL_ASSET_TRANSFER_IN,
+              INTERNAL_ASSET_TRANSFER_OUT,
+              INTEREST,
+              REBATE,
+              GOV_GRANT,
+              TAX,
+              FEE,
+            ]
         units:
           type: number
           description: Usually but not necessarily an integer
