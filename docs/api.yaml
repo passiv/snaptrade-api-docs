@@ -44,7 +44,6 @@ paths:
       tags:
         - API Status
       summary: Get API Status
-      description: TEST DESCRIPTION
       security: []
       responses:
         "200":
