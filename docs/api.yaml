@@ -242,8 +242,10 @@ paths:
           name: accounts
           description: Filter holdings by account number
           schema:
-            type: string
-            example: P1334567
+            type: array
+            items:
+              type: string
+          example: P1334567
       responses:
         "200":
           description: Returns list of accounts and holdings
