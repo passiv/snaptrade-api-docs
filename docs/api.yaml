@@ -44,6 +44,7 @@ paths:
       tags:
         - API Status
       summary: Get API Status
+      description: Check whether the API is operational and verify timestamps.
       security: []
       responses:
         "200":
