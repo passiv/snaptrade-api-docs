@@ -223,11 +223,6 @@ paths:
         - Account Information
       summary: List all accounts for the user, plus balances and positions for each account.
       parameters:
-        - in: header
-          required: true
-          name: Signature
-          schema:
-            $ref: "#/components/schemas/Signature"
         - in: query
           required: true
           name: clientId
