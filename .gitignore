@@ -36,3 +36,6 @@ __pycache__/
 
 # secrets file
 secrets.py
+
+# npm packages
+node_modules
