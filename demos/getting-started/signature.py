@@ -4,7 +4,7 @@ import json
 import time
 from base64 import b64encode
 from hashlib import sha256
-from urllib.parse import urlencode
+from urllib.parse import urlparse, urlencode
 import requests
 
 try:
@@ -26,25 +26,109 @@ consumer_key_encoded = CONSUMER_KEY.encode()
 
 base_api = "https://api.passiv.com/api/v1"
 
-holdings_endpoint = "/holdings"
 
-req = requests.Request(
-    method="get",
-    url=base_api + holdings_endpoint,
-    params=dict(
+def create_request(endpoint, method, data=None, user_id=None):
+    params = dict(
         clientId=CLIENT_ID,
-        userId=USER_ID,
+        timestamp=int(time.time()),
+    )
+    if user_id is not None:
+        params.update(dict(userId=user_id))
+
+    url = base_api + endpoint
+
+    req = requests.Request(
+        method=method,
+        url=url,
+        params=params,
+        data=data,
+    )
+
+    return sign_request(req)
+
+def sign_request(req):
+    parsed_url = urlparse(req.url)
+    request_path = parsed_url.path
+    request_query = urlencode(req.params)
+
+    sig_object = {"content": req.data if req.data != [] else None, "path": request_path, "query": request_query}
+
+    sig_content = json.dumps(sig_object, separators=(",", ":"), sort_keys=True)
+    sig_digest = hmac.new(consumer_key_encoded, sig_content.encode(), sha256).digest()
+
+    signature = b64encode(sig_digest).decode()
+
+    req.headers["Signature"] = signature
+
+    return req
+
+def send_request(req):
+    session = requests.Session()
+    prepped = session.prepare_request(req)
+    res = session.send(prepped)
+    return res
+
+
+# Register a SnapTrade user
+
+user_id = USER_ID
+
+print()
+print("Attempting to create user %s ..." % user_id)
+
+req = create_request(
+    "/snapTrade/registerUser",
+    "post",
+    data=dict(userId=user_id),
+)
+res = send_request(req)
+user_data = res.json()
+
+assert user_id == user_data.get("userId")
+
+user_secret = user_data.get("userSecret")
+
+print()
+print("User %s created. Now generating a Connection Portal link..." % user_id)
+print()
+
+
+# Generate a Connection Portal link for the new SnapTrade user
+
+req = create_request(
+    "/snapTrade/login",
+    "post",
+    data=dict(
+        userId=user_id,
+        userSecret=user_secret,
     ),
 )
+res = send_request(req)
 
-request_data = {'userId': 'api@passiv.com', 'userSecret': 'CHRIS.P.BACON'}
-request_path = "/api/v1/snapTrade/mockSignature"
-request_query = "clientId=PASSIVTEST&timestamp=1635790389"
+redirectURI = res.json().get("redirectURI")
 
-sig_object = {"content": request_data, "path": request_path, "query": request_query}
+print()
+print("Open this link in a browser:", redirectURI)
+print()
+print("Only continue when you have finished connecting your account.")
+print()
 
-sig_content = json.dumps(sig_object, separators=(",", ":"), sort_keys=True)
-sig_digest = hmac.new(consumer_key, sig_content.encode(), sha256).digest()
+input("Press [enter] to continue when you are ready.")
 
-signature = b64encode(sig_digest).decode()
+
+# Pull holdings data for the new SnapTrade user
+
+req = create_request(
+    "/snapTrade/holdings",
+    "get",
+    user_id=user_id
+)
+res = send_request(req)
+
+print()
+print("Holdings for %s:" % user_id)
+print()
+print(res.json())
+print()
+print("Congrats, you've completed the SnapTrade signature tutorial!")
 
