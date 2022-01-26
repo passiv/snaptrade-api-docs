@@ -68,14 +68,67 @@ def send_request(req):
     res = session.send(prepped)
     return res
 
-holdings_endpoint = "/snapTrade/holdings"
+
+# Register a SnapTrade user
+
+user_id = USER_ID
+
+print()
+print("Attempting to create user %s ..." % user_id)
 
 req = create_request(
-    holdings_endpoint,
-    "get",
-    user_id=USER_ID,
+    "/snapTrade/registerUser",
+    "post",
+    data=dict(userId=user_id),
 )
+res = send_request(req)
+user_data = res.json()
 
+assert user_id == user_data.get("userId")
+
+user_secret = user_data.get("userSecret")
+
+print()
+print("User %s created. Now generating a Connection Portal link..." % user_id)
+print()
+
+
+# Generate a Connection Portal link for the new SnapTrade user
+
+req = create_request(
+    "/snapTrade/login",
+    "post",
+    data=dict(
+        userId=user_id,
+        userSecret=user_secret,
+    ),
+)
 res = send_request(req)
 
+redirectURI = res.json().get("redirectURI")
+
+print()
+print("Open this link in a browser:", redirectURI)
+print()
+print("Only continue when you have finished connecting your account.")
+print()
+
+input("Press [enter] to continue when you are ready.")
+
+
+# Pull holdings data for the new SnapTrade user
+
+req = create_request(
+    "/snapTrade/holdings",
+    "get",
+    user_id=user_id
+)
+res = send_request(req)
+
+print()
+print("Holdings for %s:" % user_id)
+print()
+print(res.json())
+print()
+print("Congrats, you've completed the SnapTrade signature tutorial!")
 
