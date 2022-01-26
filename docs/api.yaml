@@ -431,9 +431,9 @@ paths:
       summary: Cancel open order in account
       parameters:
         - in: path
-          name: accountId
+          name: orderId
           required: true
-          description: The ID of the account get positions.
+          description: The brokerage order id.
           schema:
             type: string
             format: uuid
