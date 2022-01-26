@@ -1,3 +1,8 @@
+# 
+# run this from a command line like so:
+#     SNAPTRADE_CLIENT_ID="ABC" SNAPTRADE_CONSUMER_KEY="XYZ" SNAPTRADE_USER_ID="demo@your-domain.com" python signature.py
+#
+
 import os
 import hmac
 import json
