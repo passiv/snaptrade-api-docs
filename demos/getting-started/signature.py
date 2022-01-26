@@ -4,7 +4,7 @@ import json
 import time
 from base64 import b64encode
 from hashlib import sha256
-from urllib.parse import urlencode
+from urllib.parse import urlparse, urlencode
 import requests
 
 try:
@@ -26,25 +26,36 @@ consumer_key_encoded = CONSUMER_KEY.encode()
 
 base_api = "https://api.passiv.com/api/v1"
 
-holdings_endpoint = "/holdings"
+holdings_endpoint = "/snapTrade/holdings"
+
+params = dict(
+    clientId=CLIENT_ID,
+    userId=USER_ID,
+    timestamp=int(time.time()),
+)
+
+url = base_api + holdings_endpoint
 
 req = requests.Request(
     method="get",
     url=base_api + holdings_endpoint,
-    params=dict(
-        clientId=CLIENT_ID,
-        userId=USER_ID,
-    ),
+    params=params,
 )
 
-request_data = {'userId': 'api@passiv.com', 'userSecret': 'CHRIS.P.BACON'}
-request_path = "/api/v1/snapTrade/mockSignature"
-request_query = "clientId=PASSIVTEST&timestamp=1635790389"
+request_data = None
+
+parsed_url = urlparse(url)
+request_path = parsed_url.path
+request_query = urlencode(params)
 
 sig_object = {"content": request_data, "path": request_path, "query": request_query}
 
 sig_content = json.dumps(sig_object, separators=(",", ":"), sort_keys=True)
-sig_digest = hmac.new(consumer_key, sig_content.encode(), sha256).digest()
+sig_digest = hmac.new(consumer_key_encoded, sig_content.encode(), sha256).digest()
 
 signature = b64encode(sig_digest).decode()
 
+req.headers["Signature"] = signature
+
+
+res = requests.get(url, headers=dict(Signature=signature), params=params, data=request_data)
