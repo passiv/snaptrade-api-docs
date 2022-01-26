@@ -437,6 +437,14 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        description: The brokerage order ID.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/CancelOrderRequestBody"
+
       responses:
         "200":
           description: Order Record of canceled order
@@ -1759,6 +1767,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ManualTradeForm"
+    CancelOrderRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            account_id:
+            $ref: "#/components/schemas/Id"
   schemas:
     400FailedRequestResponse:
       description: Example for failed request response
