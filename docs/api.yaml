@@ -50,7 +50,7 @@ paths:
         "200":
           description: API is alive and kicking in some fashion
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Status"
         default:
