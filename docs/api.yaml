@@ -1767,7 +1767,6 @@ components:
       content:
         application/json:
           schema:
-            account_id:
             $ref: "#/components/schemas/Id"
   schemas:
     400FailedRequestResponse:
