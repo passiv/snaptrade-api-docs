@@ -50,7 +50,7 @@ paths:
         "200":
           description: API is alive and kicking in some fashion
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Status"
         default:
@@ -279,7 +279,7 @@ paths:
         "200":
           description: A list of all Account objects for the authenticated user.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -304,7 +304,7 @@ paths:
         "200":
           description: Details of a specific investment account
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -327,7 +327,7 @@ paths:
         "200":
           description: Successfully updated details of an investment account
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -416,7 +416,7 @@ paths:
         "200":
           description: List all orders in account
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -438,24 +438,19 @@ paths:
             type: string
             format: uuid
       requestBody:
-        required: true
-        description: The brokerage order ID.
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/requestBodies/CancelOrderRequestBody"
+        $ref: "#/components/requestBodies/CancelOrderRequestBody"
 
       responses:
         "200":
           description: Order Record of canceled order
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/AccountOrderRecord"
         "400":
           description: Unable to cancel open order. Please verify status in brokerage account
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/400FailedRequestResponse"
         "500":
@@ -470,7 +465,7 @@ paths:
         "200":
           description: A list of all Authorization objects for the authenticated user.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -495,7 +490,7 @@ paths:
         "200":
           description: The Authorization object which was deleted.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/BrokerageAuthorization"
         "400":
@@ -514,7 +509,7 @@ paths:
         "200":
           description: A list of all defined Brokerage objects.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -531,7 +526,7 @@ paths:
         "200":
           description: A list of all supported currencies.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -548,7 +543,7 @@ paths:
         "200":
           description: A list of all exchange rates pairs for supported currencies
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -570,7 +565,7 @@ paths:
         "200":
           description: A list of all exchange rates pairs for supported currencies
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/ExchangeRatePairs"
 
@@ -583,7 +578,7 @@ paths:
         "200":
           description: A list of all model asset class objects for the authenticated user.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -596,7 +591,7 @@ paths:
         "200":
           description: A new asset class is created.
           content:
-            application/object:
+            application/json:
               schema:
                 type: object
                 $ref: "#/components/schemas/ModelAssetClassDetails"
@@ -617,7 +612,7 @@ paths:
         "200":
           description: Details of a particular model asset class
           content:
-            application/object:
+            application/json:
               schema:
                 type: object
                 $ref: "#/components/schemas/ModelAssetClassDetails"
@@ -670,7 +665,7 @@ paths:
         "200":
           description: A list of all model portfolio objects for the authenticated user.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -683,7 +678,7 @@ paths:
         "200":
           description: A new model portfolio is created.
           content:
-            application/object:
+            application/json:
               schema:
                 type: object
                 $ref: "#/components/schemas/ModelPortfolioDetails"
@@ -704,7 +699,7 @@ paths:
         "200":
           description: Details of a particular model portfolio.
           content:
-            application/object:
+            application/json:
               schema:
                 type: object
                 $ref: "#/components/schemas/ModelPortfolioDetails"
@@ -761,7 +756,7 @@ paths:
         "200":
           description: A list of all PortfolioGroup objects for the authenticated user.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -776,7 +771,7 @@ paths:
         "200":
           description: A new PortfolioGroup is created.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/PortfolioGroup"
         "400":
@@ -824,7 +819,7 @@ paths:
         "200":
           description: The PortfolioGroup object which was updated.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/PortfolioGroup"
         "400":
@@ -853,7 +848,7 @@ paths:
         "200":
           description: The PortfolioGroup object which was deleted.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/PortfolioGroup"
         "400":
@@ -880,7 +875,7 @@ paths:
         "200":
           description: Accounts linked to portfolio group
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -905,7 +900,7 @@ paths:
         "200":
           description: Sum of cash balances across accounts in portfolio group by currency
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -936,7 +931,7 @@ paths:
         "200":
           description: Calculated trades to make
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/CalculatedTrade"
   "/portfolioGroups/{portfolioGroupId}/calculatedtrades/{calculatedTradeId}/{TradeId}":
@@ -970,7 +965,7 @@ paths:
         "200":
           description: Trade objects
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1000,7 +995,7 @@ paths:
         "200":
           description: Impact of trades to make
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1038,7 +1033,7 @@ paths:
         "200":
           description: Trade object
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Trade"
     patch:
@@ -1072,12 +1067,12 @@ paths:
         "200":
           description: Modified trade object
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Trade"
       requestBody:
         content:
-          application/object:
+          application/json:
             schema:
               $ref: "#/components/schemas/Trade"
 
@@ -1105,7 +1100,7 @@ paths:
         "200":
           description: Return trade execution statuses for all trades submitted
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1130,7 +1125,7 @@ paths:
         "200":
           description: Array of excluded assets linked to portfolio group
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1153,12 +1148,12 @@ paths:
         "200":
           description: An asset is excluded from calculations in portfolio group.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/ExcludedAsset"
       requestBody:
         content:
-          application/object:
+          application/json:
             schema:
               $ref: "#/components/schemas/UniversalSymbol"
 
@@ -1203,7 +1198,7 @@ paths:
         "200":
           description: Portfolio group target allocation has been updated
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1230,7 +1225,7 @@ paths:
         "200":
           description: Portfolio group target allocation has been updated
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/PortfolioGroupInfo"
         default:
@@ -1253,7 +1248,7 @@ paths:
         "200":
           description: Totals of each postions owned in portfolio group
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1284,7 +1279,7 @@ paths:
         "200":
           description: Settings of portfolio group
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/PortfolioGroupSettings"
         default:
@@ -1330,7 +1325,7 @@ paths:
             A list of UniversalSymbol objects which match the specified
             substring
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1339,7 +1334,7 @@ paths:
           description: Unexpected error.
       requestBody:
         content:
-          application/object:
+          application/json:
             schema:
               $ref: "#/components/schemas/SymbolQuery"
 
@@ -1360,7 +1355,7 @@ paths:
         "200":
           description: All target assets owned by the specified PortfolioGroup.
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1389,7 +1384,7 @@ paths:
         "200":
           description: A new target asset or set of target assets is created.
           content:
-            application/object:
+            application/json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/TargetAssetList"
@@ -1460,7 +1455,7 @@ paths:
         "200":
           description: The target asset is updated.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/TargetAsset"
         "400":
@@ -1496,7 +1491,7 @@ paths:
         "200":
           description: The TargetAsset object which was deleted.
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/TargetAsset"
         "400":
@@ -1517,7 +1512,7 @@ paths:
         "200":
           description: Passiv user account settings
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserSettings"
     put:
@@ -1528,12 +1523,12 @@ paths:
         "200":
           description: Passiv User account settings
           content:
-            application/object:
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserSettings"
       requestBody:
         content:
-          application/object:
+          application/json:
             schema:
               $ref: "#/components/schemas/UserSettings"
 
@@ -1548,7 +1543,7 @@ paths:
             A list of UniversalSymbol objects which match the specified
             substring
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1557,7 +1552,7 @@ paths:
           description: Unexpected error.
       requestBody:
         content:
-          application/object:
+          application/json:
             schema:
               $ref: "#/components/schemas/SymbolQuery"
 
@@ -1687,7 +1682,7 @@ paths:
         "200":
           description: Successfully retrieved transaction history
           content:
-            application/object:
+            application/json:
               schema:
                 type: array
                 items:
@@ -1772,7 +1767,6 @@ components:
       content:
         application/json:
           schema:
-            account_id:
             $ref: "#/components/schemas/Id"
   schemas:
     400FailedRequestResponse:
@@ -2480,17 +2474,17 @@ components:
         account:
           $ref: "#/components/schemas/Account"
         order_type:
-          $ref: "#components/schemas/OrderType"
+          $ref: "#/components/schemas/OrderType"
         time_in_force:
-          $ref: "#components/schemas/TimeInForce"
+          $ref: "#/components/schemas/TimeInForce"
         symbol:
-          $ref: "#components/schemas/ManualTradeSymbol"
+          $ref: "#/components/schemas/ManualTradeSymbol"
         action:
-          $ref: "#components/schemas/Action"
+          $ref: "#/components/schemas/Action"
         units:
-          $ref: "#components/schemas/Units"
+          $ref: "#/components/schemas/Units"
         price:
-          $ref: "#components/schemas/Price"
+          $ref: "#/components/schemas/Price"
     ManualTradeSymbol:
       description: Manual trade symbol object
       type: object
