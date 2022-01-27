@@ -438,12 +438,7 @@ paths:
             type: string
             format: uuid
       requestBody:
-        required: true
-        description: The brokerage order ID.
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/requestBodies/CancelOrderRequestBody"
+        $ref: "#/components/requestBodies/CancelOrderRequestBody"
 
       responses:
         "200":
@@ -2480,17 +2475,17 @@ components:
         account:
           $ref: "#/components/schemas/Account"
         order_type:
-          $ref: "#components/schemas/OrderType"
+          $ref: "#/components/schemas/OrderType"
         time_in_force:
-          $ref: "#components/schemas/TimeInForce"
+          $ref: "#/components/schemas/TimeInForce"
         symbol:
-          $ref: "#components/schemas/ManualTradeSymbol"
+          $ref: "#/components/schemas/ManualTradeSymbol"
         action:
-          $ref: "#components/schemas/Action"
+          $ref: "#/components/schemas/Action"
         units:
-          $ref: "#components/schemas/Units"
+          $ref: "#/components/schemas/Units"
         price:
-          $ref: "#components/schemas/Price"
+          $ref: "#/components/schemas/Price"
     ManualTradeSymbol:
       description: Manual trade symbol object
       type: object
