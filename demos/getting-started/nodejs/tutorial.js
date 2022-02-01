@@ -118,10 +118,23 @@ registerUserRequest
             null,
             USER_ID
           );
-          holdingsRequest("/api/v1/snapTrade/holdings").then((res) => {
-            console.log("--------------------------");
-            console.log(JSON.stringify(res.data));
-          });
+          holdingsRequest("/api/v1/snapTrade/holdings")
+            .then((res) => {
+              console.log("--------------------------");
+              console.log(JSON.stringify(res.data));
+            })
+            .catch((err) => {
+              console.log("Error fetching holdings", err.response.data.detail);
+            });
         });
+      })
+      .catch((err) => {
+        console.log(
+          "Error generating a redirect link:",
+          err.response.data.detail
+        );
       });
+  })
+  .catch((err) => {
+    console.log("Error registering the user:", err.response.data.detail);
   });
