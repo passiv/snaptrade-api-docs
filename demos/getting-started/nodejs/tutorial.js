@@ -18,24 +18,13 @@ if (USER_ID === undefined) {
 
 const baseAPI = "https://api.passiv.com";
 
-// create an instance of axios
-const SnapTradeClient = axios.create({
-  baseURL: baseAPI,
-  timeout: 30000,
-  params: { clientId: CLIENT_ID, timestamp: +new Date() },
-});
-
-// sign the request
-const signRequest = (
-  path,
-  data = null,
-  query = `clientId=${CLIENT_ID}&timestamp=${+new Date()}`
-) => {
+// signing the request
+const signRequest = (req, endpoint) => {
   const consumerKey = encodeURI(CONSUMER_KEY);
 
-  const requestData = data;
-  const requestPath = path;
-  const requestQuery = query;
+  const requestData = req.defaults.data;
+  const requestPath = endpoint;
+  const requestQuery = new URLSearchParams(req.defaults.params).toString();
 
   const sigObject = {
     content: requestData,
@@ -47,64 +36,92 @@ const signRequest = (
   const hmac = crypto.createHmac("sha256", consumerKey);
 
   const signature = hmac.update(sigContent).digest("base64");
-  return signature;
+
+  req.defaults.headers.Signature = signature;
+  return req;
 };
 
-// const getReq = (endpoint) => {
-//   const signature = signRequest(endpoint, data);
-//   SnapTradeClient.defaults.headers.Signature = signature;
-//   SnapTradeClient.get(endpoint)
-//     .then((res) => {
-//       console.log(res);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
+// creating a request
+const createRequest = (endpoint, data = null, userId = null) => {
+  let params = { clientId: CLIENT_ID, timestamp: +new Date() };
+  if (userId) {
+    params = { ...params, userId };
+  }
 
-// post request function
-const postReq = async (endpoint, data) => {
-  const signature = signRequest(endpoint, data);
-  SnapTradeClient.defaults.headers.Signature = signature;
-
-  return new Promise((resolve, reject) => {
-    SnapTradeClient.post(endpoint, data)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err.response.data.detail);
-      });
+  const request = axios.create({
+    baseURL: baseAPI,
+    timeout: 30000,
+    params: params,
+    data: data,
   });
+
+  return signRequest(request, endpoint);
 };
 
-// start
+const keypress = async () => {
+  process.stdin.setRawMode(true);
+  return new Promise((resolve) =>
+    process.stdin.once("data", (data) => {
+      const byteArray = [...data];
+      if (byteArray.length > 0 && byteArray[0] === 3) {
+        console.log("^C");
+        process.exit(1);
+      }
+      if (byteArray.length > 0 && byteArray[0] === 13) {
+        process.stdin.setRawMode(false);
+      }
+      resolve();
+    })
+  );
+};
 
-console.log(`Attempting to create user ${USER_ID} ...`);
-
-// creating a user
-postReq("/api/v1/snapTrade/registerUser", {
+const registerUserRequest = createRequest("/api/v1/snapTrade/registerUser", {
   userId: USER_ID,
-})
-  .then((res) => {
-    console.log("User created successfully!");
-    const userSecret = res.userSecret;
+});
 
-    console.log("Now generating a Connection Portal link...");
+registerUserRequest
+  .post("/api/v1/snapTrade/registerUser", {
+    userId: USER_ID,
+  })
+  .then((res) => {
+    console.log("--------------------------");
+    console.log("User created successfully ✅");
+    console.log("--------------------------");
+    const userSecret = res.data.userSecret;
+
+    console.log("Now generating a Connection Portal link 🔗");
+    console.log("--------------------------");
 
     // generate a redirect URI
-    postReq("/api/v1/snapTrade/login", {
+    const loginUserRequest = createRequest("/api/v1/snapTrade/login", {
       userId: USER_ID,
       userSecret,
-    })
-      .then((res) => {
-        const redirectURI = res.redirectURI;
-        console.log("Open this link in a browser:", redirectURI);
+    });
+
+    loginUserRequest
+      .post("/api/v1/snapTrade/login", {
+        userId: USER_ID,
+        userSecret,
       })
-      .catch((err) => {
-        console.error("ERROR generating a redirect URI!", `"${err}"`);
+      .then((res) => {
+        const redirectURI = res.data.redirectURI;
+        console.log("Open this link in a browser:");
+        console.log(redirectURI);
+        console.log("--------------------------");
+        console.log(
+          "NOTE: Only continue when you have finished connecting your account."
+        );
+        console.log("Press [ENTER] to continue");
+        keypress().then(() => {
+          const holdingsRequest = createRequest(
+            "/api/v1/snapTrade/holdings",
+            null,
+            USER_ID
+          );
+          holdingsRequest("/api/v1/snapTrade/holdings").then((res) => {
+            console.log("--------------------------");
+            console.log(JSON.stringify(res.data));
+          });
+        });
       });
-  })
-  .catch((err) => {
-    console.error("ERROR creating a user!", `"${err}"`);
   });
