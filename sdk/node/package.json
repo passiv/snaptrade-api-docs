@@ -2,7 +2,7 @@
   "name": "@snaptrade/js-fetch-api",
   "version": "1.0.0",
   "description": "Javascript SDK for SnapTrade API.",
-  "main": "./src/api.js",
+  "main": "./dist/api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
