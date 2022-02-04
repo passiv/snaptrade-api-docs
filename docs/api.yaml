@@ -10,7 +10,7 @@ info:
 
 servers:
   - description: SnapTrade Production API
-    url: https://api.passiv.com/api/v1
+    url: https://api.snaptrade.com/api/v1
 
 security:
   - PartnerSignature: []
@@ -1502,35 +1502,6 @@ paths:
           description: The specified portfolioGroupId or targetAssetId was not found.
         default:
           description: Unexpected error.
-
-  /settings:
-    get:
-      tags:
-        - Connections and Settings
-      summary: Get the user's global account settings
-      responses:
-        "200":
-          description: Passiv user account settings
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSettings"
-    put:
-      tags:
-        - Connections and Settings
-      summary: Update the user's global account settings
-      responses:
-        "200":
-          description: Passiv User account settings
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSettings"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserSettings"
 
   /symbols:
     post:
