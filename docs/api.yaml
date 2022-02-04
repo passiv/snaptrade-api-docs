@@ -152,7 +152,7 @@ paths:
         - PartnerClientId: []
         - PartnerTimestamp: []
       requestBody:
-        $ref: "#/components/requestBodies/LoginRequestBody"
+        $ref: "#/components/requestBodies/RegisterUserRequestBody"
       responses:
         "200":
           description: Delete successful
