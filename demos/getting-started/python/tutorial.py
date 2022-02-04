@@ -29,7 +29,7 @@ except KeyError:
 
 consumer_key_encoded = CONSUMER_KEY.encode()
 
-base_api = "https://api.passiv.com/api/v1"
+base_api = "https://api.snaptrade.com/api/v1"
 
 
 def create_request(endpoint, method, data=None, user_id=None):

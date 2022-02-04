@@ -16,7 +16,7 @@ if (USER_ID === undefined) {
   USER_ID = "[ENTER-YOUR-USER-ID-HERE-IF-YOU-DONT-LIKE-ENVVARS]";
 }
 
-const baseAPI = "https://api.passiv.com";
+const baseAPI = "https://api.snaptrade.com";
 
 // signing the request
 const signRequest = (req, endpoint) => {
