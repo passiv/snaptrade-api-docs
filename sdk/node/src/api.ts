@@ -16,6 +16,21 @@ class SnapTradeFetch {
   }
 
   /**
+   * Get API Status
+   */
+  async getAPIStatus() {
+    const response = await request(
+      "/api/v1/",
+      "get",
+      this.clientId,
+      this.consumerKey,
+      null,
+      null
+    );
+    return response;
+  }
+
+  /**
    * @param userId
    * Register user with SnapTrade
    */
@@ -36,16 +51,17 @@ class SnapTradeFetch {
   /**
    * @param userId
    * @param userSecret
-   * Generate a redirect URI to securely login a user to the SnapTrade Connection Portal
+   * Delete user, disabling all brokerage
+   * authorizations and permanently deleting all data associated with the user
    */
 
-  async generateRedirectURI(userId: string, userSecret: string) {
+  async deleteUser(userId: string, userSecret: string) {
     const data = {
       userId,
       userSecret,
     };
     const response = await request(
-      "/api/v1/snapTrade/login",
+      "/api/v1/snapTrade/deleteUser",
       "post",
       this.clientId,
       this.consumerKey,
@@ -58,17 +74,16 @@ class SnapTradeFetch {
   /**
    * @param userId
    * @param userSecret
-   * Delete user, disabling all brokerage
-   * authorizations and permanently deleting all data associated with the user
+   * Generate a redirect URI to securely login a user to the SnapTrade Connection Portal
    */
 
-  async deleteUser(userId: string, userSecret: string) {
+  async generateRedirectURI(userId: string, userSecret: string) {
     const data = {
       userId,
       userSecret,
     };
     const response = await request(
-      "/api/v1/snapTrade/deleteUser",
+      "/api/v1/snapTrade/login",
       "post",
       this.clientId,
       this.consumerKey,
