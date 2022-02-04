@@ -59,7 +59,7 @@ from base64 import b64encode
 from hashlib import sha256
 from urllib.parse import urlencode
 
-consumer_key = "UxrFb4cHdRWlmJKNuJjA6hoaN8uVa6jPGFVUl2UKHuKmurCnaU".encode()
+consumer_key = "YOUR_CONSUMER_KEY".encode()
 
 request_data = {'userId': 'api@passiv.com', 'userSecret': 'CHRIS.P.BACON'}
 request_path = "/api/v1/snapTrade/mockSignature"
@@ -78,9 +78,7 @@ Example code (JS):
 ```js
 const crypto = require("crypto");
 
-const consumerKey = encodeURI(
-  "UxrFb4cHdRWlmJKNuJjA6hoaN8uVa6jPGFVUl2UKHuKmurCnaU"
-);
+const consumerKey = encodeURI("YOUR_CONSUMER_KEY");
 
 const requestData = { userId: "api@passiv.com", userSecret: "CHRIS.P.BACON" };
 const requestPath = "/api/v1/snapTrade/mockSignature";
