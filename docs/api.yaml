@@ -26,18 +26,20 @@ tags:
     description: Test and debug API authentication.
   - name: Authentication
     description: Register and authenticate users with SnapTrade.
-  - name: Reference Data
-    description: Retrieve basic information for API use, such as supported brokerages, exchanges, currencies, etc.
   - name: Connections
     description: Retrieve and manage user connections.
   - name: Account Information
     description: Retrieve account information, such as positions, balances, etc.
+  - name: Reporting
+    description: Retrieve information on account transactions, performance, contributions, etc.
   - name: Trading
     description: Manage orders on user accounts
   - name: Portfolio Management
     description: Create portfolio groups, model portfolios, and trade calculations for rebalancing.
-  - name: Reporting
-    description: Retrieve information on account transactions, performance, contributions, etc.
+  - name: Reference Data
+    description: Retrieve basic information for API use, such as supported brokerages, exchanges, currencies, etc.
+
+
 
 paths:
   /:
