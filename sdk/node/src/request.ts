@@ -40,12 +40,16 @@ export const request = async (
   method: string,
   clientId: string,
   consumerKey: string,
+  userSecret: string | null = null,
   userId: string | null = null,
   data: {} | null = null
 ) => {
-  let params: any = { timestamp: +new Date(), clientId: clientId };
-  if (userId) {
-    params = { ...params, userId };
+  let params: any = {
+    timestamp: +new Date(),
+    clientId: clientId,
+  };
+  if (userId && userSecret) {
+    params = { ...params, userId, userSecret };
   }
 
   const axiosInstance = axios.create({

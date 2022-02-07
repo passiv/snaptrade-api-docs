@@ -41,6 +41,7 @@ class SnapTradeFetch {
       this.clientId,
       this.consumerKey,
       null,
+      null,
       {
         userId,
       }
@@ -56,17 +57,14 @@ class SnapTradeFetch {
    */
 
   async deleteUser(userId: string, userSecret: string) {
-    const data = {
-      userId,
-      userSecret,
-    };
     const response = await request(
       "/api/v1/snapTrade/deleteUser",
       "post",
       this.clientId,
       this.consumerKey,
-      null,
-      data
+      userSecret,
+      userId,
+      null
     );
     return response;
   }
@@ -78,17 +76,14 @@ class SnapTradeFetch {
    */
 
   async generateRedirectURI(userId: string, userSecret: string) {
-    const data = {
-      userId,
-      userSecret,
-    };
     const response = await request(
       "/api/v1/snapTrade/login",
       "post",
       this.clientId,
       this.consumerKey,
-      null,
-      data
+      userSecret,
+      userId,
+      null
     );
     return response;
   }
