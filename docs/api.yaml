@@ -162,11 +162,6 @@ paths:
             $ref: "#/components/schemas/UserID"
         - in: query
           required: true
-          name: userSecret
-          schema:
-            $ref: "#/components/schemas/UserSecret"
-        - in: query
-          required: true
           name: timestamp
           schema:
             $ref: "#/components/schemas/Timestamp"
