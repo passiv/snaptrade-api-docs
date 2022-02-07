@@ -32,13 +32,15 @@ consumer_key_encoded = CONSUMER_KEY.encode()
 base_api = "https://api.snaptrade.com/api/v1"
 
 
-def create_request(endpoint, method, data=None, user_id=None):
+def create_request(endpoint, method, data=None, user_id=None, user_secret=None):
     params = dict(
         clientId=CLIENT_ID,
         timestamp=int(time.time()),
     )
     if user_id is not None:
         params.update(dict(userId=user_id))
+    if user_secret is not None:
+        params.update(dict(userSecret=user_secret))
 
     url = base_api + endpoint
 
@@ -103,10 +105,8 @@ print()
 req = create_request(
     "/snapTrade/login",
     "post",
-    data=dict(
-        userId=user_id,
-        userSecret=user_secret,
-    ),
+    user_id=user_id,
+    user_secret=user_secret,
 )
 res = send_request(req)
 
@@ -126,7 +126,8 @@ input("Press [enter] to continue when you are ready.")
 req = create_request(
     "/snapTrade/holdings",
     "get",
-    user_id=user_id
+    user_id=user_id,
+    user_secret=user_secret,
 )
 res = send_request(req)
 
