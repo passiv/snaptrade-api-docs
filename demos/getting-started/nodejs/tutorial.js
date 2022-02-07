@@ -42,10 +42,18 @@ const signRequest = (req, endpoint) => {
 };
 
 // creating a request
-const createRequest = (endpoint, data = null, userId = null) => {
+const createRequest = (
+  endpoint,
+  data = null,
+  userId = null,
+  userSecret = null
+) => {
   let params = { clientId: CLIENT_ID, timestamp: +new Date() };
   if (userId) {
     params = { ...params, userId };
+  }
+  if (userSecret) {
+    params = { ...params, userSecret };
   }
 
   const request = axios.create({
@@ -93,16 +101,15 @@ registerUserRequest
     console.log("--------------------------");
 
     // generate a redirect URI
-    const loginUserRequest = createRequest("/api/v1/snapTrade/login", {
-      userId: USER_ID,
-      userSecret,
-    });
+    const loginUserRequest = createRequest(
+      "/api/v1/snapTrade/login",
+      null,
+      USER_ID,
+      userSecret
+    );
 
     loginUserRequest
-      .post("/api/v1/snapTrade/login", {
-        userId: USER_ID,
-        userSecret,
-      })
+      .post("/api/v1/snapTrade/login", {})
       .then((res) => {
         const redirectURI = res.data.redirectURI;
         console.log("Open this link in a browser:");
@@ -116,7 +123,8 @@ registerUserRequest
           const holdingsRequest = createRequest(
             "/api/v1/snapTrade/holdings",
             null,
-            USER_ID
+            USER_ID,
+            userSecret
           );
           holdingsRequest("/api/v1/snapTrade/holdings")
             .then((res) => {
