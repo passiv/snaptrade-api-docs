@@ -39,8 +39,6 @@ tags:
   - name: Reference Data
     description: Retrieve basic information for API use, such as supported brokerages, exchanges, currencies, etc.
 
-
-
 paths:
   /:
     get:
@@ -151,8 +149,27 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
-      requestBody:
-        $ref: "#/components/requestBodies/RegisterUserRequestBody"
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
       responses:
         "200":
           description: Delete successful
@@ -190,8 +207,27 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
-      requestBody:
-        $ref: "#/components/requestBodies/LoginRequestBody"
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
       responses:
         "200":
           description: Login successful. Redirect user to provided URI in response
@@ -1980,6 +2016,14 @@ components:
       description: SnapTrade Client ID (generated and provided to partner by Passiv)
       type: string
       example: PASSIVTEST
+    UserID:
+      description: SnapTrade User ID
+      type: string
+      example: John.doe@snaptrade.com
+    UserSecret:
+      description: SnapTrade User Secret (generated when registering user)
+      type: string
+      example: USERSECRET123
     Position:
       description: Account Position
       type: object
