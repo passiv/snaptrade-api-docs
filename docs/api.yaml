@@ -157,11 +157,6 @@ paths:
             $ref: "#/components/schemas/ClientID"
         - in: query
           required: true
-          name: timestamp
-          schema:
-            $ref: "#/components/schemas/Timestamp"
-        - in: query
-          required: true
           name: userId
           schema:
             $ref: "#/components/schemas/UserID"
@@ -170,6 +165,11 @@ paths:
           name: userSecret
           schema:
             $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Delete successful
@@ -215,11 +215,6 @@ paths:
             $ref: "#/components/schemas/ClientID"
         - in: query
           required: true
-          name: timestamp
-          schema:
-            $ref: "#/components/schemas/Timestamp"
-        - in: query
-          required: true
           name: userId
           schema:
             $ref: "#/components/schemas/UserID"
@@ -228,6 +223,11 @@ paths:
           name: userSecret
           schema:
             $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Login successful. Redirect user to provided URI in response
@@ -269,14 +269,19 @@ paths:
             $ref: "#/components/schemas/ClientID"
         - in: query
           required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
           name: timestamp
           schema:
             $ref: "#/components/schemas/Timestamp"
-        - in: query
-          required: true
-          name: userId
-          schema:
-            $ref: "#/components/schemas/SnapTradeUserID"
         - in: query
           name: accounts
           description: Filter holdings by account number
@@ -314,6 +319,27 @@ paths:
       tags:
         - Account Information
       summary: List all investment accounts for the user
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all Account objects for the authenticated user.
@@ -332,6 +358,26 @@ paths:
         - Account Information
       summary: Return details of a specific investment account
       parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: path
           name: accountId
           required: true
@@ -350,11 +396,31 @@ paths:
                   $ref: "#/components/schemas/Account"
         default:
           description: Unexpected error
-    patch:
+    put:
       tags:
         - Account Information
       summary: Update details of an investment account
       parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: path
           name: accountId
           required: true
@@ -380,6 +446,26 @@ paths:
         - Account Information
       summary: Get all cash balances of an investment account
       parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: path
           name: accountId
           required: true
@@ -405,6 +491,26 @@ paths:
         - Account Information
       summary: Get all positions of an investment account
       parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: path
           name: accountId
           required: true
@@ -430,13 +536,26 @@ paths:
         - Trading
       summary: Get all history of orders placed in account
       parameters:
-        - in: path
-          name: accountId
+        - in: query
           required: true
-          description: The ID of the account get positions.
+          name: clientId
           schema:
-            type: string
-            format: uuid
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: query
           name: status
           description: defaults value is set to "all"
@@ -451,6 +570,13 @@ paths:
           description: filter query by number of days since current day. Defaults to 90
           schema:
             type: number
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account get positions.
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: List all orders in account
@@ -469,6 +595,26 @@ paths:
         - Trading
       summary: Cancel open order in account
       parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
         - in: path
           name: accountId
           required: true
@@ -500,6 +646,27 @@ paths:
       tags:
         - Connections
       summary: List all brokerage authorizations for the user
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all Authorization objects for the authenticated user.
@@ -525,6 +692,26 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Authorization object for the authenticated user.
@@ -546,6 +733,26 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: The Authorization object which was deleted.
@@ -569,6 +776,17 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all defined Brokerage objects.
@@ -590,6 +808,17 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all supported currencies.
@@ -611,6 +840,17 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all exchange rates pairs for supported currencies
@@ -637,6 +877,16 @@ paths:
           description: "A currency pair based on currency code for example, {CAD-USD}"
           schema:
             type: string
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: A list of all exchange rates pairs for supported currencies
@@ -1588,6 +1838,17 @@ paths:
         - PartnerSignature: []
         - PartnerClientId: []
         - PartnerTimestamp: []
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: >-
@@ -1624,6 +1885,16 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Successfully gets a symbol
@@ -1651,6 +1922,16 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Successfully gets a symbol
@@ -1668,6 +1949,27 @@ paths:
       tags:
         - Trading
       summary: Check impact of trades on account.
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Return trade object and it's impact on the account
@@ -1705,6 +2007,26 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Status of order placed
@@ -1737,6 +2059,26 @@ paths:
           name: endDate
           schema:
             $ref: "#/components/schemas/ReportingDate"
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
           description: Successfully retrieved transaction history
