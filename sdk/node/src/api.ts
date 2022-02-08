@@ -19,154 +19,397 @@ class SnapTradeFetch {
    * Get API Status
    */
   async getAPIStatus() {
-    const response = await request(
-      "/api/v1/",
-      "get",
-      this.clientId,
-      this.consumerKey,
-      null,
-      null
-    );
+    const response = await request({
+      endpoint: "/api/v1/",
+      method: "get",
+      clientId: this.clientId,
+      consumerKey: this.consumerKey,
+    });
     return response;
   }
+
+  /** Authentication **/
 
   /**
    * @param userId
    * Register user with SnapTrade
    */
   async registerUser(userId: string) {
-    const response = await request(
-      "/api/v1/snapTrade/registerUser",
-      "post",
-      this.clientId,
-      this.consumerKey,
-      null,
-      null,
-      {
+    const response = await request({
+      endpoint: "/api/v1/snapTrade/registerUser",
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+      data: {
         userId,
-      }
-    );
+      },
+    });
     return response;
   }
 
   /**
-   * @param userId
-   * @param userSecret
+   * @param defaultParams
    * Delete user, disabling all brokerage
    * authorizations and permanently deleting all data associated with the user
    */
 
-  async deleteUser(userId: string, userSecret: string) {
-    const response = await request(
-      "/api/v1/snapTrade/deleteUser",
-      "post",
-      this.clientId,
-      this.consumerKey,
-      userSecret,
-      userId,
-      null
-    );
+  async deleteUser(defaultParams: { userId: string; userSecret: string }) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/snapTrade/deleteUser",
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 
   /**
-   * @param userId
-   * @param userSecret
+   * @param defaultParams
    * Generate a redirect URI to securely login a user to the SnapTrade Connection Portal
    */
 
-  async generateRedirectURI(userId: string, userSecret: string) {
-    const response = await request(
-      "/api/v1/snapTrade/login",
-      "post",
-      this.clientId,
-      this.consumerKey,
-      userSecret,
-      userId,
-      null
-    );
+  async generateRedirectURI(defaultParams: {
+    userId: string;
+    userSecret: string;
+  }) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/snapTrade/login",
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 
+  /** Account Information **/
+
   /**
-   * @param userId
+   * @param defaultParams
    * List all accounts for the user, plus balances and positions for each account
    */
-  async fetchUserHoldings(userId: string) {
-    const response = await request(
-      "/api/v1/holdings",
-      "get",
-      this.clientId,
-      this.consumerKey,
-      userId,
-      null
-    );
+  async fetchUserHoldings(defaultParams: {
+    userId: string;
+    userSecret: string;
+  }) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/holdings",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 
   /**
-   * @param userId
+   * @param defaultParams
    * List all investment accounts for the user
    */
-  async fetchUserAccounts(userId: string) {
-    const response = await request(
-      "/api/v1/accounts",
-      "get",
-      this.clientId,
-      this.consumerKey,
-      userId,
-      null
-    );
+  async fetchUserAccounts(defaultParams: {
+    userId: string;
+    userSecret: string;
+  }) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/accounts",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
   /**
-   * @param userId
+   * @param defaultParams
    * @param accountId
    * Return details of a specific investment account
    */
-  async fetchAccount(userId: string, accountId: string) {
-    const response = await request(
-      `/api/v1/accounts/${accountId}`,
-      "get",
-      this.clientId,
-      this.consumerKey,
-      userId,
-      null
-    );
+  async fetchAccount(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    accountId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/accounts/${accountId}`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 
   /**
-   * @param userId
+   * @param defaultParams
    * @param accountId
    * Get all cash balances of an investment account
    */
-  async fetchAccountBalances(userId: string, accountId: string) {
-    const response = await request(
-      `/api/v1/accounts/${accountId}/balances`,
-      "get",
-      this.clientId,
-      this.consumerKey,
-      userId,
-      null
-    );
+  async fetchAccountBalances(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    accountId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/accounts/${accountId}/balances`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 
   /**
-   * @param userId
+   * @param defaultParams
    * @param accountId
    * Get all positions of an investment account
    */
-  async fetchAccountPositions(userId: string, accountId: string) {
-    const response = await request(
-      `/api/v1/accounts/${accountId}/positions`,
-      "get",
-      this.clientId,
-      this.consumerKey,
-      userId,
-      null
-    );
+  async fetchAccountPositions(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    accountId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/accounts/${accountId}/positions`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
+    return response;
+  }
+
+  /** Trading **/
+
+  /**
+   * @param defaultParams
+   * @param accountId
+   * @param extraParams
+   * Get all history of orders placed in account
+   */
+  async fetchOrdersHistory(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    accountId: string,
+    extraParams: { status: string; days: number }
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/accounts/${accountId}/orders`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+      extraParams,
+    });
+    return response;
+  }
+
+  /**
+   * @param defaultParams
+   * @param accountId
+   * @param data
+   * Cancel open order in account
+   */
+  async cancelOpenOrder(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    accountId: string,
+    data: { brokerage_order_id: string }
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/accounts/${accountId}/orders/cancel`,
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+      data,
+    });
+    return response;
+  }
+
+  /**
+   * @param defaultParams
+   * @param data
+   * Check impact of trades on account.
+   */
+  async orderImpact(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    data: {
+      account_id: string;
+      action: "BUY" | "SELL";
+      order_type: "Limit" | "Market";
+      price: number;
+      time_in_force: "Day";
+      units: number;
+      universal_symbol_id: string;
+    }
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/trade/impact",
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+      data,
+    });
+    return response;
+  }
+
+  /**
+   * @param defaultParams
+   * @param tradeId
+   * Place order
+   */
+  async placeOrder(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    tradeId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/trade/${tradeId}`,
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
+    return response;
+  }
+
+  /** Connections **/
+
+  /**
+   * @param defaultParams
+   * List all brokerage authorizations for the user
+   */
+  async fetchBrokerageAuthorizations(defaultParams: {
+    userId: string;
+    userSecret: string;
+  }) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/authorizations",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * @param defaultParams
+   * @param authorizationId
+   * Get detail of a specific brokerage authorizations for the user
+   */
+  async fetchAuthorization(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    authorizationId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/authorizations/${authorizationId}`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * @param defaultParams
+   * @param authorizationId
+   * Get detail of a specific brokerage authorizations for the user
+   */
+  async deleteAuthorization(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    authorizationId: string
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: `/api/v1/authorizations/${authorizationId}`,
+      method: "delete",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+    });
     return response;
   }
 }

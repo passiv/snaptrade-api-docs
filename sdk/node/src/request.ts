@@ -3,6 +3,20 @@ const crypto = require("crypto");
 
 const baseAPI = "https://api.passiv.com";
 
+const JSONstringifyOrder = (obj: any) => {
+  var allKeys: any = [];
+  var seen: any = {};
+  JSON.stringify(obj, function (key, value) {
+    if (!(key in seen)) {
+      allKeys.push(key);
+      seen[key] = null;
+    }
+    return value;
+  });
+  allKeys.sort();
+  return JSON.stringify(obj, allKeys);
+};
+
 const signRequest = (req: any, endpoint: string, consumerK: string) => {
   const consumerKey = encodeURI(consumerK);
 
@@ -16,7 +30,8 @@ const signRequest = (req: any, endpoint: string, consumerK: string) => {
     query: requestQuery,
   };
 
-  const sigContent = JSON.stringify(sigObject);
+  const sigContent = JSONstringifyOrder(sigObject);
+
   const hmac = crypto.createHmac("sha256", consumerKey);
 
   const signature = hmac.update(sigContent).digest("base64");
@@ -26,30 +41,43 @@ const signRequest = (req: any, endpoint: string, consumerK: string) => {
 };
 
 /**
- * @param {string} endpoint
- * @param {string} method
- * @param {string} clientId
- * @param {string} consumerKey
- * @param {string | null} userId
- * @param {{} | null} data
- * @returns {Promise<any>}
+ * @param required
+ * @param options
  */
 
-export const request = async (
-  endpoint: string,
-  method: string,
-  clientId: string,
-  consumerKey: string,
-  userSecret: string | null = null,
-  userId: string | null = null,
-  data: {} | null = null
-) => {
+export const request = async (options: {
+  endpoint: string;
+  method: "get" | "post" | "put" | "delete";
+  consumerKey: string;
+  defaultParams: {
+    clientId: string;
+    userId: string | null;
+    userSecret: string | null;
+  };
+  extraParams: {} | null;
+  data: {} | null;
+}) => {
+  const {
+    endpoint,
+    method,
+    consumerKey,
+    defaultParams,
+    extraParams,
+    data = null,
+  } = options;
+
   let params: any = {
     timestamp: +new Date(),
-    clientId: clientId,
+    clientId: defaultParams?.clientId,
   };
-  if (userId && userSecret) {
-    params = { ...params, userId, userSecret };
+  if (defaultParams?.userId) {
+    params = { ...params, userId: defaultParams.userId };
+  }
+  if (defaultParams?.userSecret) {
+    params = { ...params, userSecret: defaultParams.userSecret };
+  }
+  if (extraParams) {
+    params = { ...params, ...extraParams };
   }
 
   const axiosInstance = axios.create({
@@ -64,6 +92,16 @@ export const request = async (
   let response;
   try {
     switch (method) {
+      case "get":
+        const getReq = await req(endpoint);
+        response = {
+          data: getReq.data,
+          meta: {
+            status: getReq.status,
+            statusText: getReq.statusText,
+          },
+        };
+        break;
       case "post":
         const postReq = await req.post(endpoint, data);
         response = {
@@ -74,8 +112,8 @@ export const request = async (
           },
         };
         break;
-      case "get":
-        const getReq = await req(endpoint);
+      case "delete":
+        const deleteReq = await req.delete(endpoint);
         response = {
           data: getReq.data,
           meta: {
