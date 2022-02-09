@@ -412,6 +412,140 @@ class SnapTradeFetch {
     });
     return response;
   }
+
+  /** Reference Data **/
+
+  /**
+   * List of all supported brokerages
+   */
+  async fetchBrokerages() {
+    const response = await request({
+      endpoint: "/api/v1/brokerages",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * List of all supported currencies
+   */
+  async fetchCurrencies() {
+    const response = await request({
+      endpoint: "/api/v1/currencies",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * Return the exchange rates of all supported currencies
+   */
+  async fetchCurrenciesRates() {
+    const response = await request({
+      endpoint: "/api/v1/currencies/rates",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * Return the exchange rate of a currency pair
+   */
+  async getCurrencyPair(currencyPair: string) {
+    const response = await request({
+      endpoint: `/api/v1/currencies/rates/${currencyPair}`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * Search for symbols
+   */
+  async searchSymbols(data: { substring: string }) {
+    const response = await request({
+      endpoint: "/api/v1/symbols",
+      method: "post",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+      data,
+    });
+    return response;
+  }
+
+  /**
+   * Get details of a symbol
+   */
+  async getSymbolDetailById(symbolId: string) {
+    const response = await request({
+      endpoint: `/api/v1/symbols/${symbolId}`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /**
+   * Get details of a symbol by the ticker
+   */
+  async getSymbolDetailByTicker(ticker: string) {
+    const response = await request({
+      endpoint: `/api/v1/symbols/${ticker}`,
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+      },
+    });
+    return response;
+  }
+
+  /** Reporting **/
+  /**
+   * Get transaction history for a user
+   */
+  async fetchTransactionHistory(
+    defaultParams: {
+      userId: string;
+      userSecret: string;
+    },
+    extraParams: { startDate: string; endDate: string }
+  ) {
+    const { userSecret, userId } = defaultParams;
+    const response = await request({
+      endpoint: "/api/v1/symbols/activities",
+      method: "get",
+      consumerKey: this.consumerKey,
+      defaultParams: {
+        clientId: this.clientId,
+        userSecret,
+        userId,
+      },
+      extraParams,
+    });
+    return response;
+  }
 }
 
 module.exports = SnapTradeFetch;
