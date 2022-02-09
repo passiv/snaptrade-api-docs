@@ -49,7 +49,7 @@ export const request = async (options: {
   endpoint: string;
   method: "get" | "post" | "put" | "delete";
   consumerKey: string;
-  defaultParams: {
+  defaultQueryParams: {
     clientId: string;
     userId: string | null;
     userSecret: string | null;
@@ -61,20 +61,20 @@ export const request = async (options: {
     endpoint,
     method,
     consumerKey,
-    defaultParams,
+    defaultQueryParams,
     extraParams,
     data = null,
   } = options;
 
   let params: any = {
     timestamp: +new Date(),
-    clientId: defaultParams?.clientId,
+    clientId: defaultQueryParams?.clientId,
   };
-  if (defaultParams?.userId) {
-    params = { ...params, userId: defaultParams.userId };
+  if (defaultQueryParams?.userId) {
+    params = { ...params, userId: defaultQueryParams.userId };
   }
-  if (defaultParams?.userSecret) {
-    params = { ...params, userSecret: defaultParams.userSecret };
+  if (defaultQueryParams?.userSecret) {
+    params = { ...params, userSecret: defaultQueryParams.userSecret };
   }
   if (extraParams) {
     params = { ...params, ...extraParams };

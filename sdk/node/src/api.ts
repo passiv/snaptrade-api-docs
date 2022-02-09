@@ -1,90 +1,101 @@
+import { DefaultQueryParams } from "./option-types";
+import {
+  ApiStatusResponseType,
+  DeleteUserResponseType,
+  RegisterUserResponseType,
+} from "./response-types";
+
 const { request } = require("./request.js");
 
 /**
  * @class SnapTradeFetch
- * @param {string} clientId
- * @param {string} consumerKey
  */
 
 class SnapTradeFetch {
   clientId: string;
   consumerKey: string;
 
+  /**
+   * Creates an instance of SnapTrade fetch.
+   * @param {string} clientId - SnapTrade Client ID (generated and provided to partner by Passiv)
+   * @param {string} consumerKey - SnapTrade Consumer Key (generated and provided to partner by Passiv)
+   */
   constructor(clientId: string, consumerKey: string) {
     this.clientId = clientId;
     this.consumerKey = consumerKey;
   }
 
   /**
-   * Get API Status
+   * Gets API Status.
+   * @returns {Promise<ApiStatusResponseType>}
    */
-  async getAPIStatus() {
+  async getAPIStatus(): Promise<ApiStatusResponseType> {
     const response = await request({
       endpoint: "/api/v1/",
       method: "get",
       clientId: this.clientId,
       consumerKey: this.consumerKey,
     });
-    return response;
+    return response as Promise<ApiStatusResponseType>;
   }
 
   /** Authentication **/
 
   /**
-   * @param userId
    * Register user with SnapTrade
+   * in order to create secure brokerage authorizations.
+   * @param {string} userId - SnapTrade User ID
+   * @returns {Promise<RegisterUserResponseType>}
    */
-  async registerUser(userId: string) {
+  async registerUser(userId: string): Promise<RegisterUserResponseType> {
     const response = await request({
       endpoint: "/api/v1/snapTrade/registerUser",
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
       data: {
         userId,
       },
     });
-    return response;
+    return response as Promise<RegisterUserResponseType>;
   }
 
   /**
-   * @param defaultParams
    * Delete user, disabling all brokerage
-   * authorizations and permanently deleting all data associated with the user
+   * authorizations and permanently deleting all data associated with the user.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @returns {Promise<DeleteUserResponseType>}
    */
-
-  async deleteUser(defaultParams: { userId: string; userSecret: string }) {
-    const { userSecret, userId } = defaultParams;
+  async deleteUser({
+    userId,
+    userSecret,
+  }: DefaultQueryParams): Promise<DeleteUserResponseType> {
     const response = await request({
       endpoint: "/api/v1/snapTrade/deleteUser",
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
       },
     });
-    return response;
+    return response as Promise<DeleteUserResponseType>;
   }
 
   /**
-   * @param defaultParams
-   * Generate a redirect URI to securely login a user to the SnapTrade Connection Portal
+   * Generate a redirect URI to securely login a user to the SnapTrade Connection Portal.
+   * @param {DefaultQueryParams} defaultQueryParams
    */
 
-  async generateRedirectURI(defaultParams: {
-    userId: string;
-    userSecret: string;
-  }) {
-    const { userSecret, userId } = defaultParams;
+  async generateRedirectURI({ userId, userSecret }: DefaultQueryParams) {
     const response = await request({
       endpoint: "/api/v1/snapTrade/login",
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -96,19 +107,15 @@ class SnapTradeFetch {
   /** Account Information **/
 
   /**
-   * @param defaultParams
-   * List all accounts for the user, plus balances and positions for each account
+   * List all accounts for the user, plus balances and positions for each account.
+   * @param {DefaultQueryParams} defaultQueryParams
    */
-  async fetchUserHoldings(defaultParams: {
-    userId: string;
-    userSecret: string;
-  }) {
-    const { userSecret, userId } = defaultParams;
+  async fetchUserHoldings({ userId, userSecret }: DefaultQueryParams) {
     const response = await request({
       endpoint: "/api/v1/holdings",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -118,19 +125,15 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * List all investment accounts for the user
+   * List all investment accounts for the user.
+   * @param {DefaultQueryParams} defaultQueryParams
    */
-  async fetchUserAccounts(defaultParams: {
-    userId: string;
-    userSecret: string;
-  }) {
-    const { userSecret, userId } = defaultParams;
+  async fetchUserAccounts({ userId, userSecret }: DefaultQueryParams) {
     const response = await request({
       endpoint: "/api/v1/accounts",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -139,23 +142,19 @@ class SnapTradeFetch {
     return response;
   }
   /**
-   * @param defaultParams
-   * @param accountId
-   * Return details of a specific investment account
+   * Return details of a specific investment account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} accountId
    */
   async fetchAccount(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     accountId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/accounts/${accountId}`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -165,23 +164,19 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param accountId
-   * Get all cash balances of an investment account
+   * Get all cash balances of an investment account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} accountId
    */
   async fetchAccountBalances(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     accountId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/accounts/${accountId}/balances`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -191,23 +186,19 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param accountId
-   * Get all positions of an investment account
+   * Get all positions of an investment account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} accountId
    */
   async fetchAccountPositions(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     accountId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/accounts/${accountId}/positions`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -219,25 +210,21 @@ class SnapTradeFetch {
   /** Trading **/
 
   /**
-   * @param defaultParams
-   * @param accountId
+   * Get all history of orders placed in account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} accountId
    * @param extraParams
-   * Get all history of orders placed in account
    */
   async fetchOrdersHistory(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     accountId: string,
     extraParams: { status: string; days: number }
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/accounts/${accountId}/orders`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -248,25 +235,21 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param accountId
+   * Cancel open order in account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} accountId
    * @param data
-   * Cancel open order in account
    */
   async cancelOpenOrder(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     accountId: string,
     data: { brokerage_order_id: string }
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/accounts/${accountId}/orders/cancel`,
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -277,15 +260,12 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param data
    * Check impact of trades on account.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param data
    */
   async orderImpact(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     data: {
       account_id: string;
       action: "BUY" | "SELL";
@@ -296,12 +276,11 @@ class SnapTradeFetch {
       universal_symbol_id: string;
     }
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: "/api/v1/trade/impact",
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -312,23 +291,19 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param tradeId
-   * Place order
+   * Place order.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} tradeId
    */
   async placeOrder(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     tradeId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/trade/${tradeId}`,
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -340,19 +315,18 @@ class SnapTradeFetch {
   /** Connections **/
 
   /**
-   * @param defaultParams
-   * List all brokerage authorizations for the user
+   * List all brokerage authorizations for the user.
+   * @param {DefaultQueryParams} defaultQueryParams
    */
-  async fetchBrokerageAuthorizations(defaultParams: {
-    userId: string;
-    userSecret: string;
-  }) {
-    const { userSecret, userId } = defaultParams;
+  async fetchBrokerageAuthorizations({
+    userId,
+    userSecret,
+  }: DefaultQueryParams) {
     const response = await request({
       endpoint: "/api/v1/authorizations",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -362,23 +336,19 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param authorizationId
-   * Get detail of a specific brokerage authorizations for the user
+   * Get detail of a specific brokerage authorizations for the user.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} authorizationId
    */
   async fetchAuthorization(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     authorizationId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/authorizations/${authorizationId}`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -388,23 +358,19 @@ class SnapTradeFetch {
   }
 
   /**
-   * @param defaultParams
-   * @param authorizationId
-   * Get detail of a specific brokerage authorizations for the user
+   * Get detail of a specific brokerage authorizations for the user.
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param {string} authorizationId
    */
   async deleteAuthorization(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     authorizationId: string
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: `/api/v1/authorizations/${authorizationId}`,
       method: "delete",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
@@ -416,14 +382,14 @@ class SnapTradeFetch {
   /** Reference Data **/
 
   /**
-   * List of all supported brokerages
+   * List of all supported brokerages,
    */
   async fetchBrokerages() {
     const response = await request({
       endpoint: "/api/v1/brokerages",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -431,14 +397,14 @@ class SnapTradeFetch {
   }
 
   /**
-   * List of all supported currencies
+   * List of all supported currencies.
    */
   async fetchCurrencies() {
     const response = await request({
       endpoint: "/api/v1/currencies",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -446,14 +412,14 @@ class SnapTradeFetch {
   }
 
   /**
-   * Return the exchange rates of all supported currencies
+   * Return the exchange rates of all supported currencies.
    */
   async fetchCurrenciesRates() {
     const response = await request({
       endpoint: "/api/v1/currencies/rates",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -461,14 +427,15 @@ class SnapTradeFetch {
   }
 
   /**
-   * Return the exchange rate of a currency pair
+   * Return the exchange rate of a currency pair.
+   * @param {string} currencyPair
    */
   async getCurrencyPair(currencyPair: string) {
     const response = await request({
       endpoint: `/api/v1/currencies/rates/${currencyPair}`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -476,14 +443,15 @@ class SnapTradeFetch {
   }
 
   /**
-   * Search for symbols
+   * Search for symbols.
+   * @param data
    */
   async searchSymbols(data: { substring: string }) {
     const response = await request({
       endpoint: "/api/v1/symbols",
       method: "post",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
       data,
@@ -492,14 +460,15 @@ class SnapTradeFetch {
   }
 
   /**
-   * Get details of a symbol
+   * Get details of a symbol.
+   * @param {string} symbolId
    */
   async getSymbolDetailById(symbolId: string) {
     const response = await request({
       endpoint: `/api/v1/symbols/${symbolId}`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -507,14 +476,15 @@ class SnapTradeFetch {
   }
 
   /**
-   * Get details of a symbol by the ticker
+   * Get details of a symbol by the ticker.
+   * @param {string} ticker
    */
   async getSymbolDetailByTicker(ticker: string) {
     const response = await request({
       endpoint: `/api/v1/symbols/${ticker}`,
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
       },
     });
@@ -522,22 +492,21 @@ class SnapTradeFetch {
   }
 
   /** Reporting **/
+
   /**
    * Get transaction history for a user
+   * @param {DefaultQueryParams} defaultQueryParams
+   * @param extraParams
    */
   async fetchTransactionHistory(
-    defaultParams: {
-      userId: string;
-      userSecret: string;
-    },
+    { userId, userSecret }: DefaultQueryParams,
     extraParams: { startDate: string; endDate: string }
   ) {
-    const { userSecret, userId } = defaultParams;
     const response = await request({
       endpoint: "/api/v1/symbols/activities",
       method: "get",
       consumerKey: this.consumerKey,
-      defaultParams: {
+      defaultQueryParams: {
         clientId: this.clientId,
         userSecret,
         userId,
