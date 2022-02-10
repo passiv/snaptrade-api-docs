@@ -584,6 +584,62 @@ paths:
         "500":
           description: Unexpected error
 
+  "/accounts/{accountId}/quotes":
+    get:
+      tags:
+        - Trading
+      summary: Get symbol quotes
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+        - in: query
+          name: symbolIds
+          required: true
+          description: List of universal_symbol_id or tickers to get quotes for.
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: use_ticker
+          description: Should be set to True if providing tickers.
+          schema:
+            type: boolean
+        - in: path
+          name: accountId
+          required: true
+          description: The ID of the account to get quotes.
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        "200":
+          description: Returns quotes object with different prices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymbolsQuotes"
+        "500":
+          description: Unexpected error
+
   "/accounts/{accountId}/orders/cancel":
     post:
       tags:
@@ -2934,6 +2990,27 @@ components:
             $ref: "#/components/schemas/ManualTrade"
         combined_remaining_balance:
           $ref: "#/components/schemas/ManualTradeBalance"
+    SymbolsQuotes:
+      description: Symbols and Tickers Quotes object
+      type: object
+      properties:
+        symbol:
+          $ref: "#/components/schemas/UniversalSymbol"
+        bid_price:
+          type: number
+          example: 8.43
+        ask_price:
+          type: number
+          example: 8.43
+        last_trade_price:
+          type: number
+          example: 8.74
+        bid_size:
+          type: number
+          example: 260
+        ask_size:
+          type: number
+          example: 344
     ManualTradeForm:
       description: Manual Trade Form
       type: object
