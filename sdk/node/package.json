@@ -7,8 +7,22 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/passiv/snaptrade"
+  },
+  "keywords": [
+    "snaptrade",
+    "snaptradeapi",
+    "snaptradesdk",
+    "snaptradejssdk"
+  ],
   "author": "Passiv",
   "license": "ISC",
+  "homepage": "https://github.com/passiv/snaptrade",
+  "bugs": {
+    "url": "https://github.com/passiv/snaptrade/issues"
+  },
   "dependencies": {
     "axios": "^0.25.0",
     "crypto": "^1.0.1"
