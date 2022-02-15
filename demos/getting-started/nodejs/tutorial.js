@@ -63,7 +63,8 @@ const createRequest = (
   userId = null,
   userSecret = null
 ) => {
-  let params = { clientId: CLIENT_ID, timestamp: +new Date() };
+  const timestamp = Math.round(+new Date().getTime() / 1000);
+  let params = { clientId: CLIENT_ID, timestamp: timestamp };
   if (userId) {
     params = { ...params, userId };
   }
