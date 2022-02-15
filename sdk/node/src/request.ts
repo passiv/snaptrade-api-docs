@@ -66,8 +66,9 @@ export const request = async (options: {
     data = null,
   } = options;
 
+  const timestamp = Math.round(+new Date().getTime() / 1000);
   let params: any = {
-    timestamp: +new Date(),
+    timestamp: timestamp,
     clientId: defaultQueryParams?.clientId,
   };
   if (defaultQueryParams?.userId) {
