@@ -18,6 +18,21 @@ if (USER_ID === undefined) {
 
 const baseAPI = "https://api.snaptrade.com";
 
+// sort keys on the sign object
+const JSONstringifyOrder = (obj) => {
+  var allKeys = [];
+  var seen = {};
+  JSON.stringify(obj, function (key, value) {
+    if (!(key in seen)) {
+      allKeys.push(key);
+      seen[key] = null;
+    }
+    return value;
+  });
+  allKeys.sort();
+  return JSON.stringify(obj, allKeys);
+};
+
 // signing the request
 const signRequest = (req, endpoint) => {
   const consumerKey = encodeURI(CONSUMER_KEY);
@@ -32,7 +47,7 @@ const signRequest = (req, endpoint) => {
     query: requestQuery,
   };
 
-  const sigContent = JSON.stringify(sigObject);
+  const sigContent = JSONstringifyOrder(sigObject);
   const hmac = crypto.createHmac("sha256", consumerKey);
 
   const signature = hmac.update(sigContent).digest("base64");
