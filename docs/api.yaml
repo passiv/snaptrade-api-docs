@@ -2309,7 +2309,7 @@ components:
           $ref: "#/components/schemas/Price"
         stop_price:
           $ref: "#/components/schemas/Price"
-        order_type":
+        order_type:
           $ref: "#/components/schemas/OrderType"
         time_in_force:
           $ref: "#/components/schemas/TimeInForce"
