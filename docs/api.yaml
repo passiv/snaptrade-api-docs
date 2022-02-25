@@ -2629,9 +2629,11 @@ components:
         symbol:
           $ref: "#/components/schemas/UniversalSymbol"
     Id:
-      type: string
-      format: uuid
-      example: 2bcd7cc3-e922-4976-bce1-9858296801c3
+      properties:
+        brokerage_order_id:
+          type: string
+          format: uuid
+          example: 2bcd7cc3-e922-4976-bce1-9858296801c3
     ModelAssetClass:
       type: object
       properties:
