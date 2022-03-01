@@ -950,7 +950,7 @@ paths:
     get:
       tags:
         - Reference Data
-      summary: Return the exchange rates of all supported currencies
+      summary: Return list of stock exchanges on Passiv and their suffixes
       security:
         - PartnerSignature: []
         - PartnerClientId: []
