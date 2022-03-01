@@ -912,7 +912,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ExchangeRatePairs"
 
-  "/currencies/rates/{currencyPair}":
+  /currencies/rates/{currencyPair}:
     get:
       tags:
         - Reference Data
@@ -945,6 +945,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExchangeRatePairs"
+
+  /exchanges:
+    get:
+      tags:
+        - Reference Data
+      summary: Return the exchange rates of all supported currencies
+      security:
+        - PartnerSignature: []
+        - PartnerClientId: []
+        - PartnerTimestamp: []
+      parameters:
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+      responses:
+        "200":
+          description: A list of all exchange rates pairs for supported currencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exchange"
 
   /modelAssetClass:
     get:
@@ -2375,10 +2405,13 @@ components:
       properties:
         code:
           type: string
-          example: NYSE
+          example: TSX
         name:
           type: string
-          example: New York Stock Exchange
+          example: Toronto Stock Exchange
+        suffix:
+          type: string
+          example: .TO
     JWT:
       description:
         JWT Token. Used to acess resources in private endpoints available
