@@ -968,7 +968,7 @@ paths:
             $ref: "#/components/schemas/Timestamp"
       responses:
         "200":
-          description: A list of all exchange rates pairs for supported currencies
+          description: A list of all supported stock exchanges
           content:
             application/json:
               schema:
