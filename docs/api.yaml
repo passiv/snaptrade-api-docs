@@ -2172,6 +2172,58 @@ paths:
 
         default:
           description: Unexpected error
+  "/performance/custom":
+    get:
+      tags:
+        - Reporting
+      summary: Get performance information for a specific timeframe
+      description: Returns performance information (contributions, dividends, rate of return, etc) for a specific timeframe
+      parameters:
+        - in: query
+          required: true
+          name: startDate
+          schema:
+            $ref: "#/components/schemas/ReportingDate"
+        - in: query
+          required: true
+          name: endDate
+          schema:
+            $ref: "#/components/schemas/ReportingDate"
+        - in: query
+          required: false
+          name: accounts
+          description: Optional comma seperated list of account IDs used to filter the request on specific accounts
+          schema:
+            $ref: "#/components/schemas/AccountIDs"
+        - in: query
+          required: true
+          name: clientId
+          schema:
+            $ref: "#/components/schemas/ClientID"
+        - in: query
+          required: true
+          name: userId
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - in: query
+          required: true
+          name: userSecret
+          schema:
+            $ref: "#/components/schemas/UserSecret"
+        - in: query
+          required: true
+          name: timestamp
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+      responses:
+        "200":
+          description: Successfully retrieved performance data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceCustom"
+        default:
+          description: Unexpected error
 
 components:
   securitySchemes:
@@ -2294,6 +2346,10 @@ components:
         name:
           type: string
           example: Registered Retirement Savings Account
+    AccountIDs:
+      description: Comma seperated list of account IDs
+      type: string
+      example: 917c8734-8470-4a3e-a18f-57c3f2ee6631,65e839a3-9103-4cfb-9b72-2071ef80c5f2
     AccountHoldings:
       description: Account Holdings
       type: object
@@ -2450,6 +2506,111 @@ components:
       description: SnapTrade User Secret (generated when registering user)
       type: string
       example: USERSECRET123
+    PerformanceCustom:
+      description: Performance Custom Response Object
+      type: object
+      properties:
+        totalEquityTimeframe:
+          type: array
+          items:
+            $ref: "#/components/schemas/PastValue"
+        contributions:
+          $ref: "#/components/schemas/NetContributions"
+        contributionTimeframe:
+          type: array
+          items:
+            $ref: "#/components/schemas/PastValue"
+        contributionTimeframeCumulative:
+          type: array
+          items:
+            $ref: "#/components/schemas/PastValue"
+        withdrawalTimeframe:
+          type: array
+          items:
+            $ref: "#/components/schemas/PastValue"
+        contributionStreak:
+          type: number
+          example: 5.0
+          description: Current streak of cosecutive months where contributions were made
+        contributionMonthsContributed:
+          type: number
+          example: 10.0
+          description: Number of months in the timeframe with contributions
+        contributionTotalMonths:
+          type: number
+          example: 13.0
+          description: Total months in timeframe
+        dividends:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetDividend"
+        dividendIncome:
+          type: number
+          description: Total dividends received over the timeframe
+          example: 135.97
+        monthlyDividends:
+          type: number
+          description: Average dividends received per month over the timeframe
+          example: 26.37
+        badTickers:
+          type: array
+          items:
+            type: string
+            example: 'MAW105'
+          description: list of tickers which may not be supported or may not have accurate price data
+        dividendTimeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyDividends"
+        commissions:
+          type: number
+          example: 3.26
+          description: commissions incurred during the timeframe
+        forexFees:
+          type: number
+          example: 5.26
+          description: forex fees incurred during the timeframe
+        fees:
+          type: number
+          example: 2.72
+          description: other fees incurred during the timeframe
+        rateOfReturn:
+          type: number
+          example: 0.082312367452
+          description: The return rate over the timeframe. Annualized if timeframe is longer than 1 year
+        returnRateTimeframe:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubPeriodReturnRate"
+        detailedMode:
+          type: boolean
+          description: Whether the user has detailed mode enabled (more frequent data points for totalEquity and contribution timeframes)
+    SubPeriodReturnRate:
+      type: object
+      properties:
+        periodStart:
+          $ref: "#/components/schemas/ReportingDate"
+        periodEnd:
+          $ref: "#/components/schemas/ReportingDate"
+        rateOfReturn:
+          type: number
+          example: 0.012312367452
+          description: The return rate for the given period
+    DividendAtDate:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: AAPL
+          description: The ticker of the symbol that the dividend came from
+        amount:
+          type: number
+          example: 6.82
+          description: The amount received from the dividend
+        currency:
+          type: string
+          example: CAD
+          description: The currency of the amount
     Position:
       description: Account Position
       type: object
@@ -2737,6 +2898,49 @@ components:
           minimum: 0
           maximum: 100
           example: 100
+    MonthlyDividends:
+      type: object
+      properties:
+        date:
+          $ref: "#/components/schemas/ReportingDate"
+        dividends:
+          type: array
+          items:
+            $ref: "#/components/schemas/DividendAtDate"
+    NetContributions:
+      type: object
+      properties:
+        date:
+          $ref: "#/components/schemas/ReportingDate"
+        contributions:
+          type: number
+          example: 524.74
+        currency:
+          type: string
+          example: CAD
+    NetDividend:
+      description: Object representing total dividends received during a timeframe
+      type: object
+      properties:
+        symbol:
+          $ref: "#/components/schemas/UniversalSymbol"
+        amount:
+          type: number
+          example: 165.05
+        currency:
+          type: string
+          example: USD
+    PastValue:
+      type: object
+      properties:
+        date:
+          $ref: "#/components/schemas/ReportingDate"
+        value:
+          type: number
+          example: 52.74
+        currency:
+          type: string
+          example: CAD
     Percent:
       type: number
       minimum: 0
