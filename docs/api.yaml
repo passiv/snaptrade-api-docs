@@ -2331,21 +2331,50 @@ components:
           example: "The requested resource does not exist."
         default_code:
           example: 1011
+    CashRestriction:
+      description: Cash restriction rules that apply to this account when undergoing portfolio rebalance calculations.
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        account:
+          $ref: "#/components/schemas/Id"
+        currency:
+          $ref: "#/components/schemas/Id"
+        type:
+          type: string
+          enum:
+            - ALLOCATE_MAX
+            - RETAIN_MIN
+        amount:
+          type: number
+          example: 100
     Account:
       description: SnapTradeUser Investment Account
       type: object
       properties:
         id:
           $ref: "#/components/schemas/Id"
-        brokerage:
-          type: string
-          example: Passiv Investr
-        number:
-          type: string
-          example: P1334567
+        brokerage_authorization:
+          $ref: "#/components/schemas/Id"
+        portfolio_group:
+          $ref: "#/components/schemas/Id"
         name:
           type: string
           example: Registered Retirement Savings Account
+        number:
+          type: string
+          example: "Q6542138443"
+        institution_name:
+          type: string
+          example: "Alpaca"
+        meta:
+          type: object
+          example: {"type": "Margin", "status": "ACTIVE", "institution_name": "Alpaca"}
+        cash_restrictions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashRestriction"
     AccountIDs:
       description: Comma seperated list of account IDs
       type: string
