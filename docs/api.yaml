@@ -30,8 +30,8 @@ tags:
     description: Retrieve and manage user connections.
   - name: Account Information
     description: Retrieve account information, such as positions, balances, etc.
-  - name: Reporting
-    description: Retrieve information on account transactions, performance, contributions, etc.
+  - name: Transactions and Reporting
+    description: Retrieve information on account transactions, performance, dividends, contributions, etc.
   - name: Trading
     description: Manage orders on user accounts
   - name: Portfolio Management
@@ -2142,9 +2142,9 @@ paths:
   "/activities/":
     get:
       tags:
-        - Reporting
+        - Transactions and Reporting
       summary: Get transaction history for a user
-      description: Returns activities (transactions) for a user. Optionally can specify timeframe with start and end date
+      description: Returns activities (transactions) for a user. Specifing start and end date is highly recommended for automatic calls for better performance
       parameters:
         - in: query
           required: false
@@ -2191,7 +2191,7 @@ paths:
   "/performance/custom":
     get:
       tags:
-        - Reporting
+        - Transactions and Reporting
       summary: Get performance information for a specific timeframe
       description: Returns performance information (contributions, dividends, rate of return, etc) for a specific timeframe
       parameters:
@@ -2390,6 +2390,9 @@ components:
         institution_name:
           type: string
           example: "Alpaca"
+        created_date:
+          type: string
+          example: "2021-06-04T16:26:46.523334Z"
         meta:
           type: object
           example: {"type": "Margin", "status": "ACTIVE", "institution_name": "Alpaca"}
@@ -2397,6 +2400,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CashRestriction"
+    AccountSimple:
+      description: SnapTradeUser Investment Account
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+          example: Registered Retirement Savings Account
+        number:
+          type: string
+          example: "Q6542138443"
     AccountIDs:
       description: Comma seperated list of account IDs
       type: string
@@ -2532,12 +2547,26 @@ components:
       description: Stock Exchange
       type: object
       properties:
+        id:
+          $ref: "#/components/schemas/Id"
         code:
           type: string
           example: TSX
+        mic_code:
+          type: string
+          example: XTSE
         name:
           type: string
           example: Toronto Stock Exchange
+        timezone:
+          type: string
+          example: America/New_York
+        start_time:
+          type: string
+          example: 09:30:00
+        close_time:
+          type: string
+          example: 16:00:00
         suffix:
           type: string
           example: .TO
@@ -3462,7 +3491,7 @@ components:
       type: object
       properties:
         account:
-          $ref: "#/components/schemas/Account"
+          $ref: "#/components/schemas/AccountSimple"
         amount:
           type: number
           example: 263.82
@@ -3531,6 +3560,11 @@ components:
           $ref: "#/components/schemas/Exchange"
         type:
           $ref: "#/components/schemas/SecurityType"
+        currencies:
+          type: array
+          items:
+            nullable: True
+            $ref: "#/components/schemas/Currency"
     SecurityType:
       description: Security Type
       type: object
