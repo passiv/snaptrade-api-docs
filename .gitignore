@@ -39,3 +39,6 @@ secrets.py
 
 # npm packages
 node_modules
+
+# packaging
+dist/
